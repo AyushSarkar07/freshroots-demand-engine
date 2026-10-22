@@ -31,7 +31,7 @@ export function Nav() {
           <span className="font-serif text-[19px] font-semibold tracking-tight text-accent">Freshroots</span>
           <span className="text-[13px] text-ink-2">Reorder Desk</span>
         </Link>
-        <nav className="-mx-1 flex flex-1 gap-1 overflow-x-auto">
+        <nav className="-mx-1 flex min-w-0 flex-1 basis-full gap-1 overflow-x-auto sm:basis-auto">
           {LINKS.map((l) => {
             const active = l.href === "/" ? path === "/" || path.startsWith("/sku") : path.startsWith(l.href);
             return (
@@ -45,14 +45,14 @@ export function Nav() {
             );
           })}
         </nav>
-        <label className="flex items-center gap-2 text-[12.5px] text-ink-2">
+        <label className="order-last flex w-full items-center gap-2 text-[12.5px] text-ink-2 sm:order-none sm:w-auto">
           <span className="whitespace-nowrap">Deciding as</span>
           <input
             value={name}
             onChange={(e) => setApprover(e.target.value)}
             placeholder="Your name"
             aria-label="Your name, recorded with every decision"
-            className={`w-36 rounded-md border bg-page px-2 py-1 text-[13px] text-ink outline-none focus:border-accent ${name.trim().length >= 2 ? "border-line" : "border-warn"}`}
+            className={`min-w-0 flex-1 sm:w-36 sm:flex-none rounded-md border bg-page px-2 py-1 text-[13px] text-ink outline-none focus:border-accent ${name.trim().length >= 2 ? "border-line" : "border-warn"}`}
           />
         </label>
       </div>
