@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+/output/
+# Course material: keep the case PDF out of the repo.
+data/*.pdf
+# web
+web/node_modules/
+web/.next/
+web/.env*
+!web/.env.example
+web/.vercel/
+web/*.tsbuildinfo
+web/next-env.d.ts
+.claude/

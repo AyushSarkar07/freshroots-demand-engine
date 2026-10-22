@@ -1,0 +1,194 @@
+{
+  "run": {
+    "engine_version": "1.0.0",
+    "evaluation_date": "2026-10-22",
+    "sales_cutoff_week": "2026-W42",
+    "inventory_snapshot_dates": [
+      "2026-10-20"
+    ],
+    "inventory_aggregation_policy": "sum_locations",
+    "calendar": {
+      "available": true,
+      "columns": [
+        "Week",
+        "Month",
+        "Festival"
+      ],
+      "week_column": "Week",
+      "festival_column": "Festival",
+      "month_column": "Month",
+      "festivals_recent_and_next_4_weeks": {
+        "2026-W43": "Diwali build-up",
+        "2026-W45": "Diwali"
+      }
+    },
+    "input_files": {
+      "sku_master": {
+        "path": "sample_data/sku_master.csv",
+        "sha256": "5ca582f1310e64b52c1134839121fdb03f13134aaeb9e80fde1d92763642a86a"
+      },
+      "current_inventory": {
+        "path": "sample_data/current_inventory.csv",
+        "sha256": "4d1b994dfbf607de03663163268ad5a61aba8c992901d5dabffcd5b631837ff2"
+      },
+      "weekly_sales": {
+        "path": "sample_data/weekly_sales.csv",
+        "sha256": "4a1fe7676280366900b54c5300895cf64d0141b1449dac4dd7fac13879b7729e"
+      },
+      "calendar": {
+        "path": "sample_data/calendar.csv",
+        "sha256": "701e0c7f930ef6fc816e9fa2007cdd0b27540f362f092f25e8ed2f80bfb407f8"
+      },
+      "distributor_master": {
+        "path": "sample_data/distributor_master.csv",
+        "sha256": "3202ff6fcfc01042384d08f3132c18cd04a8bf8b9c1ff1c320348aa7ffa867fa"
+      }
+    },
+    "config": {
+      "long_window_weeks": 12,
+      "short_window_weeks": 4,
+      "min_observed_weeks_long": 12,
+      "min_observed_weeks_short": 4,
+      "festival_months": [
+        10,
+        11,
+        3
+      ],
+      "seasonal_uplift_pct": 25.0,
+      "surge_ratio_threshold": 1.2,
+      "surge_reorder_multiplier": 1.5,
+      "low_perish_stockout_weeks": 6.0,
+      "low_perish_overstock_weeks": 14.0,
+      "high_perish_stockout_weeks": 3.0,
+      "high_perish_overstock_weeks": 4.0,
+      "reorder_rounding": "ceil",
+      "inventory_aggregation": "sum_locations",
+      "stale_inventory_days": 7,
+      "max_sales_lag_weeks": 2,
+      "sales_cutoff_week": null,
+      "valid_categories": [
+        "Beverage",
+        "Snack",
+        "Staple",
+        "Dairy Alt"
+      ],
+      "valid_perishability": [
+        "Low",
+        "High"
+      ],
+      "expected_unit_of_measure": "Units",
+      "comparison_decimals": 9,
+      "baseline_quarterly_stockout_loss_lakh": [
+        18.0,
+        22.0
+      ],
+      "baseline_quarterly_overstock_loss_lakh": [
+        10.0,
+        12.0
+      ],
+      "baseline_quarterly_total_loss_lakh": [
+        28.0,
+        34.0
+      ],
+      "prevention_scenarios_pct": [
+        10.0,
+        20.0,
+        30.0
+      ]
+    }
+  },
+  "operational_kpis": {
+    "total_skus_in_master": 11,
+    "skus_with_valid_recommendations": 8,
+    "skus_requiring_manual_review": 3,
+    "stockout_risk_skus": 3,
+    "overstock_risk_skus": 3,
+    "optimal_level_skus": 2,
+    "high_demand_spurt_skus": 2,
+    "immediate_reorder_skus": 3,
+    "pause_order_skus": 3,
+    "total_recommended_order_units": 1350,
+    "total_recommended_order_units_definition": "Sum of Recommended_Order_Qty across SKUs with an IMMEDIATE_REORDER action, in each SKU's unit of measure (Units). A quantity, not a monetary value.",
+    "recommended_order_units_by_category": {
+      "Beverage": 600,
+      "Dairy Alt": 250,
+      "Snack": 500,
+      "Staple": 0
+    },
+    "review_skus_with_indicative_stockout": 1
+  },
+  "financial_estimates": {
+    "status": "NOT_AVAILABLE",
+    "inventory_value_inr": null,
+    "recommended_purchase_order_value_inr": null,
+    "reason": "The four input files carry no unit cost, price, or margin for every SKU, so inventory exposure and purchase-order value are not calculated. Add a Unit_Cost column to sku_master to enable them."
+  },
+  "business_baseline_reported": {
+    "label": "Business baseline reported in the Freshroots case study (company-wide, not attributed to flagged SKUs)",
+    "quarterly_stockout_loss_inr_lakh": [
+      18.0,
+      22.0
+    ],
+    "quarterly_overstock_writeoff_inr_lakh": [
+      10.0,
+      12.0
+    ],
+    "quarterly_total_planning_loss_inr_lakh": [
+      28.0,
+      34.0
+    ]
+  },
+  "illustrative_prevention_scenarios": {
+    "label": "Illustrative scenarios against the reported baseline. Not forecasts and not realised savings.",
+    "scenarios": [
+      {
+        "reduction_pct": 10.0,
+        "quarterly_loss_reduction_inr_lakh": [
+          2.8,
+          3.4
+        ],
+        "annualised_inr_lakh": [
+          11.2,
+          13.6
+        ]
+      },
+      {
+        "reduction_pct": 20.0,
+        "quarterly_loss_reduction_inr_lakh": [
+          5.6,
+          6.8
+        ],
+        "annualised_inr_lakh": [
+          22.4,
+          27.2
+        ]
+      },
+      {
+        "reduction_pct": 30.0,
+        "quarterly_loss_reduction_inr_lakh": [
+          8.4,
+          10.2
+        ],
+        "annualised_inr_lakh": [
+          33.6,
+          40.8
+        ]
+      }
+    ]
+  },
+  "data_quality": {
+    "issues_total": 4,
+    "errors": 3,
+    "warnings": 0,
+    "info": 1,
+    "skus_blocked": 2,
+    "records_quarantined": 1,
+    "issues_by_code": {
+      "INSUFFICIENT_HISTORY": 1,
+      "LOCATIONS_SUMMED": 1,
+      "MISSING_INVENTORY_VALUE": 1,
+      "UNKNOWN_SKU": 1
+    },
+    "global_issues": []
+  }
+}

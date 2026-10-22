@@ -1,0 +1,100 @@
+# Freshroots Demand Planning Engine
+
+A rule-based reorder engine for Freshroots, built for the MESA AI-Native Track (Case 01). It takes the planner's documented replenishment rules and runs them on the SAP CSV exports. Every recommendation comes with an explanation, and any SKU whose data can't be trusted goes to a human for review.
+
+It calculates and explains. It does not send purchase orders: an authorised planner approves every order, for example in Zoho Inventory.
+
+## Setup
+
+Requires Python 3.9+.
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+```
+
+## Run
+
+Put the exports in `data/` (`sku_master.csv`, `current_inventory.csv`, `weekly_sales.csv`, `calendar.csv`, and optionally `distributor_master.csv`), then:
+
+```bash
+.venv/bin/python freshroots_engine.py --evaluation-date 2026-10-22
+```
+
+Each path can be overridden: `--sku-master`, `--inventory`, `--sales`, `--calendar`, `--distributors`. Other options are `--config config.example.json`, `--output-dir output` and `--log-level`. If you leave out `--evaluation-date`, the engine uses today's date.
+
+To run the synthetic demo:
+
+```bash
+.venv/bin/python make_sample_data.py
+.venv/bin/python freshroots_engine.py --sku-master sample_data/sku_master.csv --inventory sample_data/current_inventory.csv --sales sample_data/weekly_sales.csv --calendar sample_data/calendar.csv --distributors sample_data/distributor_master.csv --evaluation-date 2026-10-22 --output-dir sample_output
+```
+
+From Python:
+
+```python
+from freshroots_engine import run_freshroots_demand_engine
+result = run_freshroots_demand_engine(evaluation_date="2026-10-22", output_dir="output", print_report=False)
+result.recommendations   # one row per SKU, full precision
+result.data_quality      # every quarantined, collapsed or suspicious record
+result.summary           # same content as executive_summary.json
+```
+
+## Outputs (written to `--output-dir`)
+
+| File | Contents |
+|---|---|
+| `reorder_recommendations.csv` | One decision per SKU, with flags, action, quantity, data-quality status and explanation |
+| `data_quality_report.csv` | Each issue: source file, CSV line, SKU, severity, code, detail, and what was done with it |
+| `executive_summary.json` | KPIs, financial status, case-study baseline, scenarios, input-file SHA-256 hashes, and the config used |
+| `executive_report.txt` / `.md` | The terminal report and a Markdown version |
+
+The input files are never modified. The engine refuses to write over any of them.
+
+## Rules (defaults live in `EngineConfig` / `config.example.json`)
+
+1. **Demand.** `avg_12w_sales` and `avg_4w_sales` are means over the 12 and 4 complete ISO weeks that end at the sales cutoff. The cutoff is the latest complete week on or before the evaluation date, and it is the same for every SKU. Weeks with no data are not counted as zero.
+2. **Seasonality.** In October, November and March, `baseline_demand = avg_12w × 1.25`. This is applied before calculating cover.
+3. **Surge.** If `avg_4w / avg_12w` is strictly greater than 1.20, the SKU is flagged `HIGH_DEMAND_SPURT` and the reorder quantity becomes the standard quantity × 1.5, rounded up by default. When 12-week demand is zero, the ratio is undefined and the SKU is not flagged.
+4. **Cover.** `weeks_of_stock = Units_On_Hand / baseline_demand`. It is undefined when demand is 0.
+5. **Bands.**
+   - Low perishability: below 6 weeks means reorder; above 14 weeks means pause.
+   - High perishability: below 3 weeks means reorder; above 4 weeks means pause.
+   - Both bounds count as optimal.
+6. **Quantity.** The effective quantity is ordered only when a stockout rule fires. Otherwise the quantity is 0.
+
+The demand flag and the inventory action are independent. A SKU can be surging and overstocked at the same time.
+
+## When a SKU goes to `MANUAL_REVIEW` instead of getting a recommendation
+
+- It has fewer than 12 observed weeks in the 12-week window, or fewer than 4 in the 4-week window. Missing weeks and new SKUs are treated the same way, and no partial-history fallback is used.
+- Inventory is missing or blank, non-numeric, negative, has a missing or future date, or conflicts with another snapshot for the same SKU and location.
+- The SKU master has an invalid perishability or reorder quantity, a unit of measure other than `Units`, or a conflicting duplicate row. A category that isn't on the list only produces a warning, because category doesn't feed into any rule. `Condiment` is on the default list because it appears in the real SAP export, even though the brief names only four categories.
+- Its 12-week baseline demand is zero.
+- It is held in more than one location and the `require_single_location` policy is set.
+
+Review rows always have `Recommended_Order_Qty = 0`. The `Indicative_Action` column shows what the rules would say on the data that is available, so the planner can triage. Exact duplicate rows are collapsed with a warning. Records for unknown SKUs are quarantined and listed in the data-quality report.
+
+**Calendar.** The real `calendar.csv` is monthly (`Year, Month, Year_Month, Is_Festival_Month`). The engine checks it against the festival-month rule, and the result appears as the `Calendar Check` line in the report. If the two disagree, the engine raises a warning and still applies the rule as documented. A weekly calendar (ISO-week column plus festival names) is also supported.
+
+**Distributors.** SKUs whose distributor isn't marked `Active` in `distributor_master` get a warning.
+
+**Multi-warehouse policy.** The default, `sum_locations`, adds stock across locations, because sales are only reported at SKU level. The alternative, `require_single_location`, sends multi-location SKUs to review.
+
+## Financials
+
+The four input files contain no cost, price or margin, so inventory value and purchase-order value are reported as **not available**. To enable them, add a `Unit_Cost` column to `sku_master.csv`.
+
+The case-study losses (₹28–34 lakh per quarter) are reported as a separate company-wide baseline, alongside 10%, 20% and 30% reduction **scenarios**. These are illustrations, not forecasts, and are not attributed to the flagged SKUs.
+
+## Not modelled
+
+The engine does not model supplier pack sizes, minimum order quantities, lead times, safety stock, location-level demand, or lost sales from past stockouts. Weeks with recorded sales of 0 during a stockout look like low demand.
+
+## Tests
+
+```bash
+.venv/bin/python -m unittest discover -s tests -v
+```
+
+There are 36 tests. They cover every band and boundary, the monthly calendar check, inactive distributors, the 1.20 ratio edge, festival uplift, zero demand, missing weeks, short history, missing, duplicate and conflicting inventory, unknown SKUs, invalid numbers, multiple warehouses, empty, missing and malformed files, stale and future snapshots, the refusal to overwrite inputs, and byte-identical output across repeated runs.

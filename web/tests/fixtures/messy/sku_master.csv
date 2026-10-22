@@ -1,0 +1,21 @@
+SKU_ID,SKU_Name,Category,Perishability,Standard_Reorder_Qty,Unit_of_Measure,Distributor_ID
+ m01 ,Flat Low,Beverage,Low,500,Units,D01
+M02,Surge Low,snack,low,333,Units,D01
+M03,Gap Weeks,Staple,Low,200,Units,D02
+M04,New Launch,Beverage,High,100,Units,D02
+M05,Zero Demand,Staple,Low,100,Units,D02
+M06,Multi DC,Snack,Low,400,Units,D03
+M07,Dup Inventory,Snack,Low,400,Units,D03
+M08,Conflict Inventory,Snack,Low,400,Units,D03
+M09,Bad Qty,Snack,Low,abc,Units,D03
+M10,Cases UoM,Snack,Low,100,Cases,D04
+M11,Frozen Cat,Frozen,High,120,,D04
+M12,Stale Snap,Beverage,Low,150,Units,D04
+M13,Future Snap,Beverage,Low,150,Units,D04
+M14,No Inventory,Beverage,Low,150,Units,D01
+M15,Fraction,Dairy Alt,High,75,Units,
+M16,Medium Perish,Dairy Alt,Medium,75,Units,D01
+M16,Medium Perish 2,Dairy Alt,Low,75,Units,D01
+M17,Exact Six,Staple,Low,90,Units,D09
+M17,Exact Six,Staple,Low,90,Units,D09
+,Blank Id,Staple,Low,90,Units,D01

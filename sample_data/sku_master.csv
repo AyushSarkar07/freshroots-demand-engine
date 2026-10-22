@@ -1,0 +1,12 @@
+SKU_ID,SKU_Name,Category,Perishability,Standard_Reorder_Qty,Unit_of_Measure,Distributor_ID
+FR-BEV-001,Kokum Sherbet 750ml,Beverage,Low,600,Units,D01
+FR-BEV-002,Aam Panna 1L,Beverage,Low,500,Units,D01
+FR-SNK-001,Bhakarwadi 200g,Snack,Low,400,Units,D02
+FR-SNK-002,Banana Chips 150g,Snack,Low,333,Units,D02
+FR-STP-001,Kolhapuri Masala 100g,Staple,Low,300,Units,D03
+FR-DAL-001,Oat Milk 1L,Dairy Alt,High,250,Units,D04
+FR-DAL-002,Almond Curd 400g,Dairy Alt,High,200,Units,D04
+FR-DAL-003,Soy Paneer 200g,Dairy Alt,High,150,Units,D04
+FR-SNK-003,Millet Puffs 80g,Snack,Low,250,Units,D02
+FR-STP-002,Kala Masala 50g,Staple,Low,200,Units,D03
+FR-BEV-003,Solkadhi 500ml,Beverage,High,300,Units,D01

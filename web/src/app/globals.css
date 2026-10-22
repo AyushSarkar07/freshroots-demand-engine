@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --page: #f4f4ef;
+  --card: #fcfcfa;
+  --ink: #171a16;
+  --ink-2: #4d524a;
+  --muted: #80867c;
+  --line: #e3e5dc;
+  --line-strong: #cfd3c6;
+  --accent: #2d6a3e; /* Freshroots leaf green */
+  --accent-soft: #e2eee1;
+  --grid: #e3e4dd;
+  --axis: #c3c6ba;
+  --s1: #2a78d6; /* chart series slot 1 */
+  --s1-soft: #2a78d61a;
+  /* Status: always paired with an icon and a label. */
+  --good: #0c7a0c;
+  --good-soft: #e3f1e1;
+  --warn: #9a6400;
+  --warn-soft: #fbf0d9;
+  --bad: #b8312f;
+  --bad-soft: #f9e1df;
+  --info: #256abf;
+  --info-soft: #e1ecf9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #111311;
+    --card: #191b19;
+    --ink: #f1f2ec;
+    --ink-2: #c2c6ba;
+    --muted: #8c9186;
+    --line: #2a2d29;
+    --line-strong: #3a3e38;
+    --accent: #7cc48c;
+    --accent-soft: #1d3322;
+    --grid: #2a2c29;
+    --axis: #3a3d37;
+    --s1: #3987e5;
+    --s1-soft: #3987e526;
+    --good: #3fbf3f;
+    --good-soft: #17301a;
+    --warn: #e0a72e;
+    --warn-soft: #33290f;
+    --bad: #ef7471;
+    --bad-soft: #3a1b1a;
+    --info: #6da7ec;
+    --info-soft: #17263a;
+  }
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --font-sans: var(--font-sans-face), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: var(--font-serif-face), Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+body {
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}

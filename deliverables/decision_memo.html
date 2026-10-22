@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Freshroots: Which Brief First</title>
+<style>
+  @page { size: A4; margin: 14mm 14mm 16mm; }
+  :root { --ink:#1b2333; --ink2:#4a5468; --muted:#7a8396; --line:#dfe3ea; --head:#1f2a44;
+          --yes:#0c7a3e; --yes-bg:#e3f4ea; --no:#b42318; --no-bg:#fde8e6; --part:#9a6400; --part-bg:#fbf0d9; --pick:#eef4ff; }
+  * { box-sizing: border-box; }
+  body { margin:0; font: 10.5pt/1.45 "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; color: var(--ink); background:#fff; }
+  h1 { font-size: 20pt; margin: 0 0 2px; letter-spacing:-.01em; }
+  h2 { font-size: 13pt; margin: 18px 0 6px; padding-bottom:4px; border-bottom: 2px solid var(--head); }
+  h3 { font-size: 11pt; margin: 12px 0 4px; }
+  p { margin: 4px 0 6px; }
+  .sub { color: var(--muted); font-size: 9.5pt; margin-bottom: 10px; }
+  .verdict { background: var(--pick); border-left: 4px solid #2a5bd7; padding: 8px 12px; margin: 10px 0 4px; border-radius: 4px; }
+  table { width:100%; border-collapse: collapse; margin: 6px 0; font-size: 9.2pt; }
+  th, td { border: 1px solid var(--line); padding: 5px 6px; vertical-align: top; text-align:left; }
+  thead th { background: var(--head); color:#fff; font-weight:600; }
+  tbody th { background:#f6f7fa; font-weight:600; white-space:nowrap; }
+  .grp td { background:#eef0f5; font-weight:700; font-size:8.8pt; text-transform:uppercase; letter-spacing:.04em; color:var(--ink2); }
+  .y, .n, .p { display:inline-block; font-weight:700; font-size:8.3pt; padding:1px 6px; border-radius:3px; margin-right:4px; }
+  .y { background:var(--yes-bg); color:var(--yes); } .n { background:var(--no-bg); color:var(--no); } .p { background:var(--part-bg); color:var(--part); }
+  .pickcol { background: #f7faff; }
+  .bottom td { font-weight:600; background:#f6f7fa; }
+  ul { margin: 4px 0 6px 18px; padding:0; } li { margin: 2px 0; }
+  .two { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .box { border:1px solid var(--line); border-radius:6px; padding:8px 10px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .foot { color: var(--muted); font-size: 8.5pt; margin-top: 14px; }
+  .pb { page-break-before: always; }
+</style>
+</head>
+<body>
+
+<h1>Which brief should Freshroots build first?</h1>
+<div class="sub">Deepa's 90-day mandate · MESA AI-Native Track, Term 2, Case 01 · Assessed with the Nine Checks and the Five Pre-Build Decisions · 22 Oct 2026</div>
+
+<div class="verdict"><b>Build Demand Planning first.</b> It is the only brief that passes all nine checks. Distributor Service fails a kill switch: there is no input data. Operations Intelligence fails sizing and ownership checks: the bottleneck is who acts on the data, not the report. Of the three briefs, Demand Planning has the largest quantified loss (₹28–34 lakh a quarter), data that already exists, and rules the planner has already written down. Those rules cover 80–85% of decisions.</div>
+
+<h2>1 · The Nine Checks across the three briefs</h2>
+<table>
+  <thead><tr><th style="width:17%">Check</th><th class="pickcol" style="width:28%;background:#2a5bd7">Demand Planning</th><th style="width:27%">Distributor Service</th><th style="width:28%">Operations Intelligence</th></tr></thead>
+  <tbody>
+    <tr class="grp"><td colspan="4">Kill switches: any No means don't build it</td></tr>
+    <tr><th>01 Problem real?</th>
+      <td class="pickcol"><span class="y">YES</span>₹18–22 L a quarter in stockouts plus ₹10–12 L in write-offs. The forecast is 3–4 weeks old when it reaches procurement.</td>
+      <td><span class="p">PARTLY</span>3 distributors lost, 2 citing responsiveness, and a ₹28 L account cut its orders by 30%. The scale of the problem has not been measured.</td>
+      <td><span class="y">YES</span>A ₹9 L write-off after procurement acted on data that was 3 days old.</td></tr>
+    <tr><th>02 Workflow repeated?</th>
+      <td class="pickcol"><span class="y">YES</span>Every month for 400 SKUs, taking 2 working days. The planner wants to run it twice a week.</td>
+      <td><span class="y">YES</span>50–80 WhatsApp messages a day.</td>
+      <td><span class="y">YES</span>A 4-hour report every Monday.</td></tr>
+    <tr><th>03 Input available?</th>
+      <td class="pickcol"><span class="y">YES</span>3 years of SAP sales data, which IT can export. The sample exports pass validation with no errors: 15 SKUs, 16 weeks, a stock snapshot and the calendar.</td>
+      <td><span class="n">NO</span>Chats aren't archived, queries have never been categorised, and response times and resolution rate are unknown. "60–70% routine" is a guess.</td>
+      <td><span class="y">YES</span>2 years of clean SAP data, and the 12 metrics are well defined.</td></tr>
+    <tr class="grp"><td colspan="4">Sizing: any No means build something smaller</td></tr>
+    <tr><th>04 Output valuable?</th>
+      <td class="pickcol"><span class="y">YES</span>The output feeds procurement's purchase orders directly.</td>
+      <td>n/a (killed at 03)</td>
+      <td><span class="n">NO</span>A faster dashboard doesn't change the weekly approval cycle. Deepa says the report isn't the bottleneck.</td></tr>
+    <tr><th>05 Impact measurable?</th>
+      <td class="pickcol"><span class="y">YES</span>Stockout incidents, write-off value, the share of SKUs within their target stock range, and planning cycle time.</td>
+      <td><span class="n">NO</span>No baseline exists for response time or resolution.</td>
+      <td><span class="p">WEAK</span>One incident. How often it happens is unknown.</td></tr>
+    <tr><th>06 ROI worth it?</th>
+      <td class="pickcol"><span class="y">YES</span>Cutting losses by 10% saves ₹2.8–3.4 L a quarter, or ₹11–14 L a year, against a ₹15 L budget. The build is rules-based, so it is cheap to run.</td>
+      <td><span class="p">UNKNOWN</span>Plausible (₹18–25 L a year per distributor) but can't be sized without data.</td>
+      <td><span class="p">UNCLEAR</span>One ₹9 L event plus 4 analyst hours a week.</td></tr>
+    <tr class="grp"><td colspan="4">Boundary: any No means put a human exactly here</td></tr>
+    <tr><th>07 Failure risk OK?</th>
+      <td class="pickcol"><span class="y">YES*</span>A wrong purchase order costs money, so <b>a person approves every PO</b>. The engine never sends orders itself.</td>
+      <td><span class="n">NO</span>A wrong automated reply goes straight to a ₹20 L account.</td>
+      <td><span class="y">YES</span>Alerts are low-risk.</td></tr>
+    <tr><th>08 Judgment protected?</th>
+      <td class="pickcol"><span class="y">YES*</span>The 15–20% of cases the rules don't cover (launches, unusual distributor behaviour, one-off events) go to Raghav as <b>MANUAL_REVIEW</b>.</td>
+      <td>—</td>
+      <td>—</td></tr>
+    <tr><th>09 Owner clear?</th>
+      <td class="pickcol"><span class="y">YES</span>Raghav owns the rules, procurement owns approval, and Deepa sponsors.</td>
+      <td><span class="p">PARTLY</span>The CS lead, but there is no handoff protocol.</td>
+      <td><span class="n">NO</span>Nobody is named to act when a metric moves. That gap is the real problem.</td></tr>
+    <tr class="bottom"><td>Verdict</td>
+      <td class="pickcol" style="color:#0c7a3e">BUILD NOW. The checks marked * set where the human approval step goes.</td>
+      <td style="color:#b42318">DON'T BUILD YET. First run a 4–6 week logging pilot: categorise every query and time every reply.</td>
+      <td style="color:#9a6400">BUILD SMALLER, LATER. First fix who decides and how fast. Then add a small mid-week alert.</td></tr>
+  </tbody>
+</table>
+<p style="font-size:9pt;color:var(--ink2)">Demand Planning also partly addresses the cadence problem in Operations Intelligence. Procurement starts acting on data from a twice-weekly run instead of a monthly forecast that is 3–4 weeks old.</p>
+
+<h2 class="pb">2 · Five Pre-Build Decisions for Demand Planning</h2>
+
+<div class="box">
+<h3>1 · Outcome definition: what must measurably change</h3>
+<ul>
+  <li>Fewer stockouts and fewer write-offs of perishable stock, measured in rupees each quarter against the ₹28–34 L baseline.</li>
+  <li>More SKUs sitting inside their target stock range. That range is 6–14 weeks of stock for low-perishability SKUs and 3–4 weeks for high-perishability ones.</li>
+  <li>The planning cycle moves from <b>monthly with data 3–4 weeks old</b> to <b>twice a week with data under 1 week old</b>.</li>
+</ul>
+</div>
+
+<div class="box" style="margin-top:8px">
+<h3>2 · Baseline: the current state in numbers</h3>
+<div class="two">
+<div><b>From the brief</b><ul>
+  <li>Stockout losses: ₹18–22 L a quarter</li>
+  <li>Overstock write-offs: ₹10–12 L a quarter, mostly perishables</li>
+  <li>Cycle: once a month, 2 planner days, data 3–4 weeks old when used</li>
+  <li>Rules cover 80–85% of decisions; 15–20% are judgment calls</li></ul></div>
+<div><b>From the SAP export (snapshot 19 Oct, week 42)</b><ul class="num">
+  <li>15 SKUs evaluated, 0 data-quality errors</li>
+  <li><b>8 of 15 (53%)</b> within their target range</li>
+  <li><b>5 (33%)</b> at stockout risk, including both perishable lines with under 2 weeks of stock</li>
+  <li><b>2 (13%)</b> overstocked: Quinoa at 22 weeks, Coconut Water at 4.1 weeks against a 4-week maximum</li></ul></div>
+</div>
+</div>
+
+<div class="box" style="margin-top:8px">
+<h3>3 · Workflow change: what gets redesigned around the system</h3>
+<ul>
+  <li><b>Before:</b> once a month, Raghav pulls data from SAP, works through it in Excel and writes a forecast. Procurement then raises purchase orders in Zoho.</li>
+  <li><b>After:</b> every Monday and Thursday the analyst uploads the SAP export. The engine applies Raghav's written rules to every SKU, and Gemini drafts a short planner brief.</li>
+  <li><b>Raghav</b> handles only the exceptions flagged MANUAL_REVIEW, about 15–20%.</li>
+  <li><b>Procurement</b> approves, edits or rejects each reorder in the app, then exports the approved orders, grouped by distributor, into Zoho.</li>
+  <li><b>What the system does not do:</b> AI never sets a quantity, and no order is sent without a named approver. The thresholds are a configuration file that Raghav owns.</li>
+</ul>
+</div>
+
+<div class="box" style="margin-top:8px">
+<h3>4 · Measurement plan: in the world, not in the logs</h3>
+<ul>
+  <li><b>Weeks 1–4, shadow mode.</b> The engine runs alongside Raghav. We measure how often its decisions match his on the SKUs the rules cover, and we record why each disagreement happened.</li>
+  <li><b>Quarter 1, live on the SKUs the rules cover.</b> We compare against the baseline:
+    <ul>
+      <li>stockout incidents, from distributor short-supply complaints and zero-stock weeks in SAP</li>
+      <li>write-off value, from the finance ledger</li>
+      <li>the share of SKUs within their target range at each run</li>
+      <li>time from SAP export to approved PO</li>
+    </ul></li>
+  <li><b>Override rate.</b> Every edit or rejection is logged with the approver and a reason. A rising override rate means the rules are drifting away from how planners actually decide.</li>
+</ul>
+</div>
+
+<div class="box" style="margin-top:8px">
+<h3>5 · Kill criterion: when to stop and redesign</h3>
+<ul>
+  <li><b>Shadow mode:</b> the engine agrees with Raghav on <b>fewer than 80%</b> of the decisions the rules cover, even after the rules are tuned. That means the written rules aren't how he actually plans.</li>
+  <li><b>Live:</b> after one quarter, losses on covered SKUs are <b>not at least 10% below the baseline</b>, or the <b>override rate is above 30%</b>.</li>
+  <li><b>Operations:</b> IT cannot deliver the SAP export twice a week for 4 weeks in a row. Without fresh data the faster cycle is pointless.</li>
+</ul>
+</div>
+
+<div class="foot">Sources: Freshroots case brief (MESA Case 01, 22 Oct) and the SAP sample exports (sku_master, current_inventory, weekly_sales, calendar, distributor_master). Rupee figures are the company-wide losses reported in the brief. The reduction percentages are scenarios, not forecasts.</div>
+</body>
+</html>

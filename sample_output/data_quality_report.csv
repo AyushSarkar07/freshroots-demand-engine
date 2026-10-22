@@ -1,0 +1,5 @@
+Source_File,Row_Number,SKU_ID,Severity,Issue_Code,Detail,Disposition,Blocks_SKU
+current_inventory,13,FR-BEV-003,ERROR,MISSING_INVENTORY_VALUE,Units_On_Hand is blank (not assumed to be zero),SKU_BLOCKED,True
+current_inventory,,FR-SNK-001,INFO,LOCATIONS_SUMMED,Stock summed across 2 locations (Goa DC; Pune DC),KEPT,False
+weekly_sales,127,FR-XXX-999,ERROR,UNKNOWN_SKU,SKU_ID 'FR-XXX-999' not in sku_master,QUARANTINED,False
+weekly_sales,,FR-SNK-003,ERROR,INSUFFICIENT_HISTORY,Only 5 of 12 weeks in the baseline window (history starts 2026-W38),SKU_BLOCKED,True
