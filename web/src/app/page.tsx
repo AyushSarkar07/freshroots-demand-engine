@@ -35,16 +35,16 @@ export default async function Decisions({ searchParams }: PageProps<"/">) {
 
   return (
     <>
-      <section className="on-dark relative overflow-hidden bg-forest text-ivory">
+      <section className="on-dark relative overflow-hidden bg-night text-cream">
         <div aria-hidden className="coord-grid pointer-events-none absolute inset-0" />
-        <div aria-hidden className="pointer-events-none absolute right-[-10%] top-[-30%] h-[620px] w-[620px] rounded-full bg-[radial-gradient(circle,rgb(201_243_106/0.13),transparent_62%)]" />
+        <div aria-hidden className="pointer-events-none absolute right-[-10%] top-[-30%] h-[620px] w-[620px] rounded-full bg-[radial-gradient(circle,rgb(245_180_39/0.15),transparent_62%)]" />
         <div className="relative mx-auto grid max-w-[1320px] items-center gap-6 px-5 pb-20 pt-8 sm:px-8 sm:pb-24 sm:pt-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:px-10 lg:pb-28 lg:pt-14">
           <div>
-            <div className="reveal reveal-1 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-sage">Freshroots / Reorder intelligence</div>
+            <div className="reveal reveal-1 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-mist">Freshroots / Reorder intelligence</div>
             <h1 className="reveal reveal-2 mt-4 font-display text-[clamp(46px,7vw,92px)] font-semibold leading-[0.92] tracking-[-0.035em]">
-              Demand moves.<br /><span className="text-lime">Stay ahead.</span>
+              Demand moves.<br /><span className="text-spice">Stay ahead.</span>
             </h1>
-            <p className="reveal reveal-3 mt-5 max-w-[46ch] text-[16px] leading-relaxed text-sage sm:text-[17px]">
+            <p className="reveal reveal-3 mt-5 max-w-[46ch] text-[16px] leading-relaxed text-mist sm:text-[17px]">
               Every SKU has a signal. See what needs action before it becomes a supply problem.
             </p>
             <dl className="reveal reveal-4 mt-7 flex flex-wrap gap-x-6 gap-y-3 text-[12.5px]">
@@ -52,10 +52,10 @@ export default async function Decisions({ searchParams }: PageProps<"/">) {
                 <dt className="sr-only">System status</dt>
                 <dd><StatusDot tone={fresh.status}>{fresh.statusText}</StatusDot></dd>
               </div>
-              <div className="flex gap-1.5"><dt className="text-sage">Evaluated</dt><dd className="tnum font-semibold">{fmtDate(run.evaluation_date)}</dd></div>
-              <div className="flex gap-1.5"><dt className="text-sage">Stock as of</dt><dd className="tnum font-semibold">{fresh.snapshot ? fmtDate(fresh.snapshot) : "—"}{fresh.snapshotAgeDays != null && <span className="font-normal text-sage"> ({fresh.snapshotAgeDays}d before)</span>}</dd></div>
-              <div className="flex gap-1.5"><dt className="text-sage">Sales through</dt><dd className="tnum font-semibold">{r.sales_cutoff_week}</dd></div>
-              <div className="flex gap-1.5"><dt className="text-sage">Seasonal</dt><dd className="font-semibold">{uplift ? <span className="text-lime">+{uplift}% festival uplift</span> : "No uplift"}</dd></div>
+              <div className="flex gap-1.5"><dt className="text-mist">Evaluated</dt><dd className="tnum font-semibold">{fmtDate(run.evaluation_date)}</dd></div>
+              <div className="flex gap-1.5"><dt className="text-mist">Stock as of</dt><dd className="tnum font-semibold">{fresh.snapshot ? fmtDate(fresh.snapshot) : "—"}{fresh.snapshotAgeDays != null && <span className="font-normal text-mist"> ({fresh.snapshotAgeDays}d before)</span>}</dd></div>
+              <div className="flex gap-1.5"><dt className="text-mist">Sales through</dt><dd className="tnum font-semibold">{r.sales_cutoff_week}</dd></div>
+              <div className="flex gap-1.5"><dt className="text-mist">Seasonal</dt><dd className="font-semibold">{uplift ? <span className="text-spice">+{uplift}% festival uplift</span> : "No uplift"}</dd></div>
             </dl>
           </div>
           <div className="reveal reveal-5 relative mx-auto -mb-4 w-full max-w-[240px] [--orbit-size:400px] sm:mb-0 sm:max-w-[300px] lg:max-w-[400px]">

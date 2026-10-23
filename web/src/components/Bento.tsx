@@ -39,7 +39,7 @@ function Card({ children, className = "", onClick, label }: { children: ReactNod
 }
 
 function Kicker({ children, dark = false }: { children: ReactNode; dark?: boolean }) {
-  return <div className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${dark ? "text-sage" : "text-muted"}`}>{children}</div>;
+  return <div className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${dark ? "text-mist" : "text-muted"}`}>{children}</div>;
 }
 
 function Ring({ value, total }: { value: number; total: number }) {
@@ -49,7 +49,7 @@ function Ring({ value, total }: { value: number; total: number }) {
     <svg width="68" height="68" viewBox="0 0 68 68" aria-hidden className="shrink-0 -rotate-90">
       <circle cx="34" cy="34" r={r} fill="none" stroke="var(--line)" strokeWidth="7" />
       {frac > 0 && (
-        <circle cx="34" cy="34" r={r} fill="none" stroke="var(--forest)" strokeWidth="7" strokeLinecap="round"
+        <circle cx="34" cy="34" r={r} fill="none" stroke="var(--night)" strokeWidth="7" strokeLinecap="round"
           strokeDasharray={`${c * frac} ${c}`} className="transition-[stroke-dasharray] duration-300 ease-[var(--ease)]" />
       )}
     </svg>
@@ -70,17 +70,17 @@ export function Bento({ runId, recs, config, history, brief, fresh, calendarAgre
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-6 lg:grid-cols-12">
       {/* 1 — dominant: what to order */}
-      <section className="on-dark relative order-1 overflow-hidden rounded-[var(--radius-xl)] border border-forest-line bg-forest-2 p-6 text-ivory shadow-[var(--shadow-3)] md:order-none md:col-span-6 lg:col-span-6 lg:row-span-2">
-        <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgb(201_243_106/0.18),transparent_65%)]" />
+      <section className="on-dark relative order-1 overflow-hidden rounded-[var(--radius-xl)] border border-night-line bg-night-2 p-6 text-cream shadow-[var(--shadow-3)] md:order-none md:col-span-6 lg:col-span-6 lg:row-span-2">
+        <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgb(245_180_39/0.2),transparent_65%)]" />
         <div className="relative flex items-start justify-between gap-4">
           <Kicker dark>Recommended reorder</Kicker>
-          <span className="tnum rounded-full bg-forest-3 px-2.5 py-1 text-[11.5px] font-semibold text-sage">
+          <span className="tnum rounded-full bg-night-3 px-2.5 py-1 text-[11.5px] font-semibold text-mist">
             {approvedCount}/{reorder.length} approved
           </span>
         </div>
         <div className="relative mt-3 flex items-end gap-3">
-          <AnimatedNumber value={totalUnits} className="font-display text-[64px] font-semibold leading-[0.9] tracking-[-0.03em] text-lime sm:text-[76px]" />
-          <div className="pb-2 text-[13px] leading-snug text-sage">units across<br /><b className="text-ivory">{reorder.length} SKU{reorder.length === 1 ? "" : "s"}</b> below their reorder point</div>
+          <AnimatedNumber value={totalUnits} className="font-display text-[64px] font-semibold leading-[0.9] tracking-[-0.03em] text-spice sm:text-[76px]" />
+          <div className="pb-2 text-[13px] leading-snug text-mist">units across<br /><b className="text-cream">{reorder.length} SKU{reorder.length === 1 ? "" : "s"}</b> below their reorder point</div>
         </div>
         {reorder.length ? (
           <ul className="relative mt-6 space-y-1">
@@ -89,15 +89,15 @@ export function Bento({ runId, recs, config, history, brief, fresh, calendarAgre
               return (
                 <li key={r.SKU_ID}>
                   <button onClick={() => onOpen(r.SKU_ID)}
-                    className="group grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 rounded-[var(--radius)] px-2 py-2 text-left transition-colors duration-150 hover:bg-forest-3 sm:grid-cols-[minmax(0,1fr)_120px_64px]">
+                    className="group grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 rounded-[var(--radius)] px-2 py-2 text-left transition-colors duration-150 hover:bg-night-3 sm:grid-cols-[minmax(0,1fr)_120px_64px]">
                     <span className="min-w-0">
                       <span className="block truncate text-[13.5px] font-medium">{shortName(r.SKU_Name)}</span>
-                      <span className="tnum text-[11.5px] text-sage">
-                        <span className="text-coral">{weeks(r.weeks_of_stock)} wks</span> of {coverRange(r.Perishability, config).lo}+ needed{r.Perishability === "High" ? " · perishable" : ""}{r.demand_spurt_flag ? " · surge ×1.5" : ""}
+                      <span className="tnum text-[11.5px] text-mist">
+                        <span className="text-under">{weeks(r.weeks_of_stock)} wks</span> of {coverRange(r.Perishability, config).lo}+ needed{r.Perishability === "High" ? " · perishable" : ""}{r.demand_spurt_flag ? " · surge ×1.5" : ""}
                       </span>
                     </span>
-                    <span aria-hidden className="hidden h-1.5 overflow-hidden rounded-full bg-forest-3 sm:block">
-                      <span className="block h-full rounded-full bg-lime transition-[width] duration-300" style={{ width: `${(r.Recommended_Order_Qty / maxQty) * 100}%`, opacity: ok ? 1 : 0.55 }} />
+                    <span aria-hidden className="hidden h-1.5 overflow-hidden rounded-full bg-night-3 sm:block">
+                      <span className="block h-full rounded-full bg-spice transition-[width] duration-300" style={{ width: `${(r.Recommended_Order_Qty / maxQty) * 100}%`, opacity: ok ? 1 : 0.55 }} />
                     </span>
                     <span className="tnum text-right text-[14px] font-semibold">{units(r.Recommended_Order_Qty)}{ok && <span className="sr-only"> (approved)</span>}</span>
                   </button>
@@ -106,11 +106,11 @@ export function Bento({ runId, recs, config, history, brief, fresh, calendarAgre
             })}
           </ul>
         ) : (
-          <p className="relative mt-6 text-[14px] text-sage">Nothing is below its reorder point in this run.</p>
+          <p className="relative mt-6 text-[14px] text-mist">Nothing is below its reorder point in this run.</p>
         )}
         <div className="relative mt-auto flex flex-wrap items-center justify-between gap-3 pt-6">
-          <span className="text-[12px] text-sage">Bar = recommended quantity · solid once approved</span>
-          <button onClick={() => onFilter("IMMEDIATE_REORDER")} className="inline-flex items-center gap-1.5 rounded-[var(--radius)] bg-lime px-3.5 py-2 text-[13px] font-semibold text-forest transition-colors hover:bg-[#d4f77f]">
+          <span className="text-[12px] text-mist">Bar = recommended quantity · solid once approved</span>
+          <button onClick={() => onFilter("IMMEDIATE_REORDER")} className="inline-flex items-center gap-1.5 rounded-[var(--radius)] bg-spice px-3.5 py-2 text-[13px] font-semibold text-night transition-colors hover:bg-spice-hover">
             Review reorders <IconArrowRight width={15} height={15} />
           </button>
         </div>
@@ -146,12 +146,12 @@ export function Bento({ runId, recs, config, history, brief, fresh, calendarAgre
       {/* 4 — overstock */}
       <Card onClick={() => onFilter("PAUSE_ORDER")} label={`${g.pause.length} SKUs overstocked. Show them.`}
         className="order-5 border-line bg-paper-2 p-5 md:order-none md:col-span-3 lg:col-span-3">
-        <div aria-hidden className="absolute inset-x-0 top-0 h-1 bg-amber" />
+        <div aria-hidden className="absolute inset-x-0 top-0 h-1 bg-over" />
         <Kicker>Overstock pauses</Kicker>
         <div className="mt-3 font-display text-[48px] font-semibold leading-none tracking-tight"><AnimatedNumber value={g.pause.length} /></div>
         <ul className="mt-3 space-y-1 text-[12.5px]">
           {g.pause.slice(0, 3).map((r) => (
-            <li key={r.SKU_ID} className="flex justify-between gap-2"><span className="truncate text-ink-2">{shortName(r.SKU_Name)}</span><span className="tnum shrink-0 font-semibold text-warn">{weeks(r.weeks_of_stock)} wks</span></li>
+            <li key={r.SKU_ID} className="flex justify-between gap-2"><span className="truncate text-ink-2">{shortName(r.SKU_Name)}</span><span className="tnum shrink-0 font-semibold text-over-ink">{weeks(r.weeks_of_stock)} wks</span></li>
           ))}
           {!g.pause.length && <li className="text-ink-2">No SKU is above its overstock limit.</li>}
         </ul>
@@ -168,11 +168,11 @@ export function Bento({ runId, recs, config, history, brief, fresh, calendarAgre
         <div className="mt-4 flex flex-wrap gap-1.5" aria-hidden>
           {[...recs].sort(byCover).map((r) => {
             const st = coverState(r.weeks_of_stock, coverRange(r.Perishability, config));
-            const bg = r.Review_Required ? "transparent" : st === "below" ? "var(--coral)" : st === "above" ? "var(--amber)" : "var(--ok)";
+            const bg = r.Review_Required ? "transparent" : st === "below" ? "var(--under)" : st === "above" ? "var(--over)" : "var(--ok)";
             return <span key={r.SKU_ID} title={`${shortName(r.SKU_Name)}: ${weeks(r.weeks_of_stock)} wks`} className="h-3 w-3 rounded-full" style={{ background: bg, border: r.Review_Required ? "1.5px dashed var(--muted)" : "none" }} />;
           })}
         </div>
-        <span className="mt-2 text-[11.5px] text-muted">One dot per SKU, lowest cover first. Coral below range, green in range, amber over.</span>
+        <span className="mt-2 text-[11.5px] text-muted">One dot per SKU, lowest cover first. Vermilion below range, green in range, indigo over.</span>
       </Card>
 
       {/* 6 — demand surge */}
@@ -210,7 +210,7 @@ export function Bento({ runId, recs, config, history, brief, fresh, calendarAgre
           <>
             <p className="mt-3 font-display text-[21px] font-semibold leading-snug tracking-tight">{brief.headline}</p>
             <ul className="mt-3 space-y-2 text-[13.5px] leading-relaxed text-ink-2">
-              {brief.bullets.map((b, i) => <li key={i} className="flex gap-2.5"><span aria-hidden className="mt-[9px] h-1 w-3 shrink-0 rounded-full bg-lime-deep" /><span>{b}</span></li>)}
+              {brief.bullets.map((b, i) => <li key={i} className="flex gap-2.5"><span aria-hidden className="mt-[9px] h-1 w-3 shrink-0 rounded-full bg-spice-deep" /><span>{b}</span></li>)}
             </ul>
             {brief.watch.length > 0 && (
               <div className="mt-4 rounded-[var(--radius)] border border-warn/25 bg-warn-soft px-3.5 py-2.5 text-[12.5px] text-warn">

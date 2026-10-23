@@ -16,7 +16,7 @@ export function ConfirmDialog({ open, title, children, confirmLabel, tone = "pri
   }, [open]);
   return (
     <dialog ref={ref} onCancel={(e) => { e.preventDefault(); onCancel(); }}
-      className="m-auto w-[min(440px,calc(100vw-32px))] rounded-[var(--radius-xl)] border border-line bg-paper-2 p-0 text-ink shadow-[var(--shadow-3)] backdrop:bg-forest/55">
+      className="m-auto w-[min(440px,calc(100vw-32px))] rounded-[var(--radius-xl)] border border-line bg-paper-2 p-0 text-ink shadow-[var(--shadow-3)] backdrop:bg-night/55">
       <div className="p-6">
         <h2 className="font-display text-[20px] font-semibold tracking-tight">{title}</h2>
         <div className="mt-2 text-[14px] leading-relaxed text-ink-2">{children}</div>

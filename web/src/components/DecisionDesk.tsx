@@ -73,9 +73,9 @@ export function DecisionDesk({ runId, recs, decisions, config, filter, setFilter
           const on = filter === t.f;
           return (
             <button key={t.f} role="tab" aria-selected={on} onClick={() => setFilter(t.f)}
-              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] transition-colors duration-150 ${on ? "bg-forest font-semibold text-ivory" : "text-ink-2 hover:bg-paper-3"}`}>
+              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] transition-colors duration-150 ${on ? "bg-night font-semibold text-cream" : "text-ink-2 hover:bg-paper-3"}`}>
               {t.label}
-              <span className={`tnum rounded-full px-1.5 text-[11px] ${on ? "bg-lime text-forest" : "bg-paper-3 text-muted"}`}>{count(t.f)}</span>
+              <span className={`tnum rounded-full px-1.5 text-[11px] ${on ? "bg-spice text-night" : "bg-paper-3 text-muted"}`}>{count(t.f)}</span>
             </button>
           );
         })}
@@ -103,8 +103,8 @@ export function DecisionDesk({ runId, recs, decisions, config, filter, setFilter
               const isSel = selected === r.SKU_ID;
               return (
                 <tr key={r.SKU_ID} onClick={() => onOpen(r.SKU_ID)}
-                  className={`cursor-pointer border-t border-line align-top transition-colors duration-150 max-md:grid max-md:grid-cols-2 max-md:gap-x-4 max-md:gap-y-3 max-md:px-5 max-md:py-4 ${isSel ? "bg-lime/15" : "hover:bg-paper"}`}>
-                  <td className={`relative py-4 pl-6 pr-3 max-md:col-span-2 max-md:p-0 ${isSel ? "before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-lime-deep" : ""}`}>
+                  className={`cursor-pointer border-t border-line align-top transition-colors duration-150 max-md:grid max-md:grid-cols-2 max-md:gap-x-4 max-md:gap-y-3 max-md:px-5 max-md:py-4 ${isSel ? "bg-spice/15" : "hover:bg-paper"}`}>
+                  <td className={`relative py-4 pl-6 pr-3 max-md:col-span-2 max-md:p-0 ${isSel ? "before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-spice-deep" : ""}`}>
                     <button onClick={(e) => { e.stopPropagation(); onOpen(r.SKU_ID); }} className="text-left font-semibold hover:underline">{shortName(r.SKU_Name)}</button>
                     <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[12px] text-muted">
                       <span className="font-mono text-[11.5px]">{r.SKU_ID}</span>· {r.Category}

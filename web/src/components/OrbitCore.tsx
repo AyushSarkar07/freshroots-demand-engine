@@ -30,9 +30,9 @@ export function OrbitCore({ reorder, within, pause, review }: { reorder: string[
   }, []);
 
   const rings: Ring[] = [
-    { key: "reorder", label: "Replenish", count: reorder.length, color: "var(--coral)", size: 46, period: 38, names: reorder },
-    { key: "within", label: "In range", count: within.length, color: "var(--lime)", size: 70, period: 64, reverse: true, names: within },
-    { key: "pause", label: "Overstock", count: pause.length, color: "var(--amber)", size: 94, period: 96, names: [...pause, ...review] },
+    { key: "reorder", label: "Replenish", count: reorder.length, color: "var(--under)", size: 46, period: 38, names: reorder },
+    { key: "within", label: "In range", count: within.length, color: "var(--ok-fill)", size: 70, period: 64, reverse: true, names: within },
+    { key: "pause", label: "Overstock", count: pause.length, color: "var(--over)", size: 94, period: 96, names: [...pause, ...review] },
   ];
   const summary = `Demand core with three orbits: ${reorder.length} SKUs to replenish, ${within.length} in range, ${pause.length} overstocked${review.length ? `, ${review.length} for planner review` : ""}.`;
 
@@ -46,7 +46,7 @@ export function OrbitCore({ reorder, within, pause, review }: { reorder: string[
             className="absolute left-1/2 top-1/2 rounded-full border [transform-style:preserve-3d]"
             style={{
               width: `${r.size}%`, height: `${r.size}%`, marginLeft: `-${r.size / 2}%`, marginTop: `-${r.size / 2}%`,
-              borderColor: "rgb(158 173 164 / 0.28)",
+              borderColor: "rgb(199 181 196 / 0.26)",
               animation: `${r.reverse ? "orbit-spin-rev" : "orbit-spin"} ${r.period}s linear infinite`,
             }}>
             {r.names.map((name, i) => {
@@ -58,7 +58,7 @@ export function OrbitCore({ reorder, within, pause, review }: { reorder: string[
                   style={{
                     left: `${50 + 50 * Math.cos(a)}%`, top: `${50 + 50 * Math.sin(a)}%`,
                     background: isReview ? "transparent" : r.color,
-                    border: isReview ? "1.5px solid var(--sage)" : "none",
+                    border: isReview ? "1.5px solid var(--mist)" : "none",
                     boxShadow: isReview ? "none" : `0 0 12px ${r.color}`,
                   }} />
               );
@@ -70,25 +70,25 @@ export function OrbitCore({ reorder, within, pause, review }: { reorder: string[
           <div className="absolute left-0 top-0 h-[27cqw] w-[27cqw] rounded-full [animation:core-breathe_7s_ease-in-out_infinite]"
             style={{
               transform: "translate(-50%, -50%)",
-              background: "radial-gradient(circle at 34% 30%, #f6ffdc 0%, #d9fb8a 18%, #c9f36a 42%, rgb(140 190 50 / 0.85) 68%, rgb(201 243 106 / 0.15) 100%)",
-              boxShadow: "0 0 80px 10px rgb(201 243 106 / 0.28), inset -10px -14px 28px rgb(16 27 24 / 0.35)",
+              background: "radial-gradient(circle at 34% 30%, #fff6d9 0%, #ffd873 18%, #f5b427 44%, rgb(196 118 16 / 0.9) 70%, rgb(245 180 39 / 0.14) 100%)",
+              boxShadow: "0 0 90px 12px rgb(245 180 39 / 0.3), inset -10px -14px 28px rgb(60 20 40 / 0.45)",
             }} />
         </div>
       </div>
 
       {/* 2D labels: tied to the orbits by position, not rotated with them */}
       <div aria-hidden className="tnum pointer-events-none absolute inset-0 text-[11px] font-semibold uppercase tracking-[0.12em]">
-        <span className="absolute left-1/2 top-[57%] -translate-x-1/2 text-forest/70 mix-blend-normal">Demand</span>
+        <span className="absolute left-1/2 top-[57%] -translate-x-1/2 text-night/75">Demand</span>
         {rings.map((r, i) => (
-          <span key={r.key} className="absolute flex items-center gap-1.5 text-sage"
+          <span key={r.key} className="absolute flex items-center gap-1.5 text-mist"
             style={[{ right: "0%", top: "8%" }, { left: "0%", top: "14%" }, { right: "0%", bottom: "14%" }][i]}>
             <span className="h-1.5 w-1.5 rounded-full" style={{ background: r.color }} />
-            {r.label} <span className="text-ivory">{r.count}</span>
+            {r.label} <span className="text-cream">{r.count}</span>
           </span>
         ))}
         {review.length > 0 && (
-          <span className="absolute bottom-[5%] right-[0%] flex items-center gap-1.5 text-sage">
-            <span className="h-1.5 w-1.5 rounded-full border border-sage" />Planner review <span className="text-ivory">{review.length}</span>
+          <span className="absolute bottom-[5%] right-[0%] flex items-center gap-1.5 text-mist">
+            <span className="h-1.5 w-1.5 rounded-full border border-mist" />Planner review <span className="text-cream">{review.length}</span>
           </span>
         )}
       </div>

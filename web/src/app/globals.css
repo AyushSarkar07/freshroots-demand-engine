@@ -1,50 +1,61 @@
 @import "tailwindcss";
 
 /*
- * Freshroots Control Room design tokens.
- * Dark forest carries context (navigation, hero, detail headers); warm ivory carries work
- * (tables, forms, panels). Lime is the single accent: primary actions, active states, the
- * signature orbit. Coral = critical (stockout risk), amber = warning (overstock), lime = healthy.
+ * Freshroots Control Room design tokens: "Kokum & Turmeric".
+ * Graded from the Konkan coast Freshroots sells into: deep kokum plum carries context
+ * (navigation, hero, detail headers), warm rice paper carries work (tables, forms, panels),
+ * and turmeric is the single accent: primary actions, active states, the demand core.
+ * Status is its own system: vermilion = below range (stockout risk), monsoon indigo =
+ * above range (overstock), leaf green = in range, amber = data warnings only.
  */
 :root {
   color-scheme: light;
 
-  /* Brand palette */
-  --forest: #101b18;
-  --forest-2: #192820;
-  --forest-3: #203128;
-  --forest-line: #2d4236;
-  --lime: #c9f36a;
-  --lime-deep: #a9d94a;
-  --ivory: #f3f5ec;
-  --sage: #9eada4;
-  --amber: #ffb36b;
-  --coral: #f2785e;
+  /* Dark context surfaces */
+  --night: #1b1120;
+  --night-2: #251829;
+  --night-3: #311f35;
+  --night-line: #46304a;
+  --cream: #fbf4ea; /* text on night */
+  --mist: #c7b5c4; /* secondary text on night */
+
+  /* Accent */
+  --spice: #f5b427; /* turmeric */
+  --spice-deep: #d99a12;
+  --spice-hover: #f8c24f;
+
+  /* Status marks (fills on any surface) */
+  --under: #ff7657; /* vermilion: below range */
+  --over: #97a3ff; /* monsoon indigo: above range */
+  --ok-fill: #9fd47a; /* leaf: in range, on dark */
+  --amber: #ffb86b; /* data warnings, on dark */
 
   /* Light working surfaces */
-  --paper: #f3f5ec;
-  --paper-2: #fbfcf7;
-  --paper-3: #e8ece0;
-  --ink: #101b18;
-  --ink-2: #3c4b43;
-  --muted: #5c6b62;
-  --line: #dde3d6;
-  --line-strong: #c4cdbd;
+  --paper: #f6efe4;
+  --paper-2: #fffbf5;
+  --paper-3: #eee4d5;
+  --ink: #1b1120;
+  --ink-2: #4b3b48;
+  --muted: #6c5c68;
+  --line: #e6dacb;
+  --line-strong: #d2c3ae;
 
-  /* Status: fills for marks, inks for text on paper (all >= 4.5:1 on --paper-2) */
-  --ok: #426b14;
-  --ok-soft: #e4f3c6;
+  /* Status inks and washes on paper (all >= 4.5:1) */
+  --ok: #3b6626;
+  --ok-soft: #e3eed5;
   --warn: #8a5208;
-  --warn-soft: #fde9d2;
-  --crit: #b23e27;
-  --crit-soft: #fbe1da;
-  --neutral-soft: #e6eae2;
+  --warn-soft: #fbe8cf;
+  --crit: #b23322;
+  --crit-soft: #fadcd4;
+  --over-ink: #3c48a3;
+  --over-soft: #e5e7fa;
+  --neutral-soft: #ece4da;
 
   /* Chart */
-  --series: #2f5a46;
-  --series-soft: #2f5a4614;
-  --grid: #e3e8dc;
-  --axis: #c4cdbd;
+  --series: #5a3d5c;
+  --series-soft: rgb(90 61 92 / 0.08);
+  --grid: #ece2d4;
+  --axis: #d2c3ae;
 
   /* Spacing, radii, elevation, motion */
   --space-1: 4px;
@@ -57,9 +68,9 @@
   --radius: 10px;
   --radius-lg: 16px;
   --radius-xl: 22px;
-  --shadow-1: 0 1px 0 rgb(16 27 24 / 0.04), 0 1px 2px rgb(16 27 24 / 0.06);
-  --shadow-2: 0 1px 0 rgb(16 27 24 / 0.04), 0 12px 32px -16px rgb(16 27 24 / 0.28);
-  --shadow-3: 0 24px 64px -24px rgb(6 12 10 / 0.55);
+  --shadow-1: 0 1px 0 rgb(27 17 32 / 0.04), 0 1px 2px rgb(27 17 32 / 0.07);
+  --shadow-2: 0 1px 0 rgb(27 17 32 / 0.04), 0 12px 32px -16px rgb(27 17 32 / 0.3);
+  --shadow-3: 0 24px 64px -24px rgb(12 6 14 / 0.6);
   --dur-fast: 150ms;
   --dur: 220ms;
   --dur-slow: 300ms;
@@ -68,16 +79,19 @@
 }
 
 @theme inline {
-  --color-forest: var(--forest);
-  --color-forest-2: var(--forest-2);
-  --color-forest-3: var(--forest-3);
-  --color-forest-line: var(--forest-line);
-  --color-lime: var(--lime);
-  --color-lime-deep: var(--lime-deep);
-  --color-ivory: var(--ivory);
-  --color-sage: var(--sage);
+  --color-night: var(--night);
+  --color-night-2: var(--night-2);
+  --color-night-3: var(--night-3);
+  --color-night-line: var(--night-line);
+  --color-cream: var(--cream);
+  --color-mist: var(--mist);
+  --color-spice: var(--spice);
+  --color-spice-deep: var(--spice-deep);
+  --color-spice-hover: var(--spice-hover);
+  --color-under: var(--under);
+  --color-over: var(--over);
+  --color-ok-fill: var(--ok-fill);
   --color-amber: var(--amber);
-  --color-coral: var(--coral);
   --color-paper: var(--paper);
   --color-paper-2: var(--paper-2);
   --color-paper-3: var(--paper-3);
@@ -92,6 +106,8 @@
   --color-warn-soft: var(--warn-soft);
   --color-crit: var(--crit);
   --color-crit-soft: var(--crit-soft);
+  --color-over-ink: var(--over-ink);
+  --color-over-soft: var(--over-soft);
   --color-neutral-soft: var(--neutral-soft);
   --font-sans: var(--font-sans-face), system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: var(--font-display-face), var(--font-sans-face), system-ui, sans-serif;
@@ -102,7 +118,7 @@
 }
 
 html {
-  background: var(--forest);
+  background: var(--night);
 }
 body {
   background: var(--paper);
@@ -115,18 +131,19 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Focus ring: ink on paper, turmeric on night (both >= 3:1 against their surface). */
 :focus-visible {
-  outline: 2px solid var(--lime-deep);
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
   border-radius: 4px;
 }
 .on-dark :focus-visible {
-  outline-color: var(--lime);
+  outline-color: var(--spice);
 }
 
 ::selection {
-  background: var(--lime);
-  color: var(--forest);
+  background: var(--spice);
+  color: var(--night);
 }
 
 /* ---------------------------------------------------------------- motion */
@@ -181,7 +198,7 @@ body {
 }
 
 .skeleton {
-  background: linear-gradient(90deg, var(--paper-3) 0%, #f0f3ea 50%, var(--paper-3) 100%);
+  background: linear-gradient(90deg, var(--paper-3) 0%, #f5ede1 50%, var(--paper-3) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.4s linear infinite;
   border-radius: var(--radius);
@@ -190,8 +207,8 @@ body {
 /* The hero's coordinate grid: fine lines, fading out towards the edges. */
 .coord-grid {
   background-image:
-    linear-gradient(to right, rgb(201 243 106 / 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(201 243 106 / 0.06) 1px, transparent 1px);
+    linear-gradient(to right, rgb(245 180 39 / 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(245 180 39 / 0.07) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse 70% 80% at 70% 45%, #000 20%, transparent 75%);
 }

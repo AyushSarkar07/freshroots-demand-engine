@@ -31,13 +31,13 @@ export function SkuDrawer({ runId, rec, decision, history, config, distributor, 
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      <button aria-label="Close panel" tabIndex={-1} onClick={onClose} className="absolute inset-0 bg-forest/35 [animation:fade_var(--dur)_var(--ease)_both]" />
+      <button aria-label="Close panel" tabIndex={-1} onClick={onClose} className="absolute inset-0 bg-night/35 [animation:fade_var(--dur)_var(--ease)_both]" />
       <aside role="dialog" aria-modal="true" aria-labelledby="sku-drawer-title"
         className="relative flex h-full w-full max-w-[540px] flex-col overflow-y-auto [&>*]:shrink-0 bg-paper-2 shadow-[var(--shadow-3)] [animation:drawer-in_240ms_var(--ease)_both]">
         <SkuHeader rec={rec} distributor={distributor} titleId="sku-drawer-title"
           right={
             <button ref={closeRef} onClick={onClose} aria-label="Close (Escape)"
-              className="shrink-0 rounded-full border border-forest-line p-2 text-sage transition-colors hover:bg-forest-3 hover:text-ivory">
+              className="shrink-0 rounded-full border border-night-line p-2 text-mist transition-colors hover:bg-night-3 hover:text-cream">
               <IconClose width={16} height={16} />
             </button>
           } />

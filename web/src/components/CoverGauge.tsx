@@ -3,10 +3,10 @@ import { units } from "@/lib/format";
 import { Tip } from "./ui";
 
 const MARK: Record<string, { fill: string; text: string; word: string }> = {
-  below: { fill: "var(--coral)", text: "text-crit", word: "Below reorder point" },
-  within: { fill: "var(--forest)", text: "text-ok", word: "In target range" },
-  above: { fill: "var(--amber)", text: "text-warn", word: "Above overstock limit" },
-  unknown: { fill: "var(--sage)", text: "text-muted", word: "Cover unknown" },
+  below: { fill: "var(--under)", text: "text-crit", word: "Below reorder point" },
+  within: { fill: "var(--ok)", text: "text-ok", word: "In target range" },
+  above: { fill: "var(--over)", text: "text-over-ink", word: "Above overstock limit" },
+  unknown: { fill: "var(--mist)", text: "text-muted", word: "Cover unknown" },
 };
 
 /**
@@ -29,8 +29,8 @@ export function CoverGauge({ weeks, range, onHand, demand, size = "sm" }: {
       <div tabIndex={0} aria-label={`${m.word}. ${tip}`} className={`relative w-full rounded-sm ${lg ? "pb-6 pt-1" : "py-1"} ${lg ? "min-w-[260px]" : "min-w-[132px]"}`}>
         <div className={`relative flex w-full overflow-hidden rounded-full ${lg ? "h-3" : "h-2"}`}>
           <span className="h-full bg-crit-soft" style={{ width: `${s.lo}%` }} />
-          <span className="h-full bg-ok-soft" style={{ width: `${s.hi - s.lo}%`, boxShadow: "inset 0 0 0 1px rgb(77 122 23 / 0.28)" }} />
-          <span className="h-full flex-1 bg-warn-soft" />
+          <span className="h-full bg-ok-soft" style={{ width: `${s.hi - s.lo}%`, boxShadow: "inset 0 0 0 1px rgb(59 102 38 / 0.3)" }} />
+          <span className="h-full flex-1 bg-over-soft" />
         </div>
         {/* boundary ticks */}
         {[s.lo, s.hi].map((p, i) => (
@@ -45,7 +45,7 @@ export function CoverGauge({ weeks, range, onHand, demand, size = "sm" }: {
         )}
         {s.marker != null && (
           <span aria-hidden
-            className={`absolute -translate-x-1/2 rounded-full border-2 border-paper-2 shadow-[0_1px_3px_rgb(16_27_24/0.35)] transition-[left] duration-300 ease-[var(--ease)] ${lg ? "top-[-3px] h-[18px] w-[18px]" : "top-0 h-4 w-4"}`}
+            className={`absolute -translate-x-1/2 rounded-full border-2 border-paper-2 shadow-[0_1px_3px_rgb(27_17_32/0.35)] transition-[left] duration-300 ease-[var(--ease)] ${lg ? "top-[-3px] h-[18px] w-[18px]" : "top-0 h-4 w-4"}`}
             style={{ left: `${s.marker}%`, background: m.fill }} />
         )}
       </div>

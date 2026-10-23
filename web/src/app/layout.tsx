@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "Freshroots Reorder Desk",
   description: "Demand moves. Stay ahead. Twice-weekly reorder decisions from the SAP export: rules decide, people approve.",
 };
-export const viewport: Viewport = { themeColor: "#101b18" };
+export const viewport: Viewport = { themeColor: "#1b1120" };
 // The sidebar shows the live run list, so no page (not even the 404) is frozen at build time.
 export const dynamic = "force-dynamic";
 

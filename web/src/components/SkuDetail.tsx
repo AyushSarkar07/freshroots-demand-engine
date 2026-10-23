@@ -23,13 +23,13 @@ function Fact({ k, v, note, strong = false }: { k: string; v: ReactNode; note?: 
 /** Dark identity header shared by the drawer and the full SKU page. */
 export function SkuHeader({ rec, distributor, titleId, right }: { rec: Recommendation; distributor?: { name: string; status: string }; titleId?: string; right?: ReactNode }) {
   return (
-    <div className="on-dark relative overflow-hidden bg-forest px-6 pb-6 pt-5 text-ivory">
+    <div className="on-dark relative overflow-hidden bg-night px-6 pb-6 pt-5 text-cream">
       <div className="coord-grid pointer-events-none absolute inset-0 opacity-70" aria-hidden />
       <div className="relative flex items-start justify-between gap-4">
         <div className="min-w-0">
           <Eyebrow dark>{rec.SKU_ID} · {rec.Category} · {rec.Perishability} perishability</Eyebrow>
           <h2 id={titleId} className="font-display text-[26px] font-semibold leading-tight tracking-[-0.015em]">{rec.SKU_Name.replace(/^Freshroots\s+/i, "")}</h2>
-          {distributor && <div className="mt-1 text-[12.5px] text-sage">Supplied by {distributor.name || rec.Distributor_ID}{distributor.status && distributor.status !== "Active" ? ` (${distributor.status})` : ""}</div>}
+          {distributor && <div className="mt-1 text-[12.5px] text-mist">Supplied by {distributor.name || rec.Distributor_ID}{distributor.status && distributor.status !== "Active" ? ` (${distributor.status})` : ""}</div>}
         </div>
         {right}
       </div>
@@ -37,8 +37,8 @@ export function SkuHeader({ rec, distributor, titleId, right }: { rec: Recommend
         <StatusBadge action={rec.Action} />
         {rec.Action === "IMMEDIATE_REORDER" && (
           <div className="text-right">
-            <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-sage">Recommended</div>
-            <div className="tnum font-display text-[30px] font-semibold leading-none text-lime">{units(rec.Recommended_Order_Qty)}<span className="ml-1 text-[14px] font-medium text-sage">units</span></div>
+            <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-mist">Recommended</div>
+            <div className="tnum font-display text-[30px] font-semibold leading-none text-spice">{units(rec.Recommended_Order_Qty)}<span className="ml-1 text-[14px] font-medium text-mist">units</span></div>
           </div>
         )}
       </div>

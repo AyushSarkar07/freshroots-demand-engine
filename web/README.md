@@ -17,11 +17,11 @@ Twice a week, the analyst uploads the SAP export. The engine applies Raghav's do
 ## Design system ("The Freshroots Control Room")
 
 - **Tokens.** All tokens live in `src/app/globals.css`: palette, spacing, radii, elevation and motion.
-- **Surfaces and colour.**
-  - Dark forest carries context: the sidebar, hero and detail headers.
-  - Warm ivory carries work: tables, forms and panels.
-  - Lime is the single accent.
-  - Coral marks stockout risk, amber marks overstock, and green means in range.
+- **Surfaces and colour ("Kokum & Turmeric", graded from the Konkan coast).**
+  - Deep kokum plum (`night`) carries context: the sidebar, hero and detail headers.
+  - Warm rice paper (`paper`) carries work: tables, forms and panels.
+  - Turmeric (`spice`) is the single accent and the demand core of the orbit.
+  - Status has its own colours: vermilion below range (stockout risk), monsoon indigo above range (overstock), leaf green in range, and amber for data warnings only.
 - **Typography.** Bricolage Grotesque for display, Inter for data, with tabular numerals throughout.
 - **Signature object.** `OrbitCore` is pure CSS 3D with no library. Each point is a real SKU, placed on the orbit for its decision. It pauses when off-screen and stays still under `prefers-reduced-motion`.
 - **Data-driven visuals.**

@@ -38,21 +38,21 @@ function ToastItem({ toast, onDone }: { toast: Toast; onDone: () => void }) {
     const timer = setTimeout(onDone, toast.action ? 7000 : 4500);
     return () => clearTimeout(timer);
   }, [onDone, toast.action]);
-  const icon = toast.tone === "error" ? <IconAlert className="text-coral" /> : <IconCheck className="text-lime" />;
+  const icon = toast.tone === "error" ? <IconAlert className="text-under" /> : <IconCheck className="text-spice" />;
   return (
     <div role={toast.tone === "error" ? "alert" : "status"}
-      className="on-dark pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-[var(--radius-lg)] border border-forest-line bg-forest px-4 py-3 text-ivory shadow-[var(--shadow-3)] [animation:toast-in_var(--dur)_var(--ease)_both]">
+      className="on-dark pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-[var(--radius-lg)] border border-night-line bg-night px-4 py-3 text-cream shadow-[var(--shadow-3)] [animation:toast-in_var(--dur)_var(--ease)_both]">
       <span className="mt-0.5 shrink-0">{icon}</span>
       <div className="min-w-0 flex-1">
         <div className="text-[13.5px] font-medium">{toast.title}</div>
-        {toast.body && <div className="mt-0.5 text-[12.5px] text-sage">{toast.body}</div>}
+        {toast.body && <div className="mt-0.5 text-[12.5px] text-mist">{toast.body}</div>}
       </div>
       {toast.action && (
-        <button onClick={() => { toast.action!.run(); onDone(); }} className="shrink-0 rounded-md px-2 py-1 text-[12.5px] font-semibold text-lime hover:bg-forest-3">
+        <button onClick={() => { toast.action!.run(); onDone(); }} className="shrink-0 rounded-md px-2 py-1 text-[12.5px] font-semibold text-spice hover:bg-night-3">
           {toast.action.label}
         </button>
       )}
-      <button onClick={onDone} aria-label="Dismiss" className="shrink-0 rounded-md p-1 text-sage hover:bg-forest-3 hover:text-ivory"><IconClose width={14} height={14} /></button>
+      <button onClick={onDone} aria-label="Dismiss" className="shrink-0 rounded-md p-1 text-mist hover:bg-night-3 hover:text-cream"><IconClose width={14} height={14} /></button>
     </div>
   );
 }

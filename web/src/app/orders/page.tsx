@@ -130,7 +130,7 @@ export default async function Orders({ searchParams }: PageProps<"/orders">) {
                   : `${sku}: ${String(d.kind)}${d.decision === "order" ? `, ${units(Number(d.qty))} units` : ""}`;
                 return (
                   <li key={e.id} className="relative text-[13px]">
-                    <span aria-hidden className={`absolute -left-[25px] top-1.5 h-2 w-2 rounded-full ${e.kind === "po_exported" ? "bg-lime-deep" : e.kind === "decision_cleared" ? "bg-line-strong" : "bg-forest"}`} />
+                    <span aria-hidden className={`absolute -left-[25px] top-1.5 h-2 w-2 rounded-full ${e.kind === "po_exported" ? "bg-spice-deep" : e.kind === "decision_cleared" ? "bg-line-strong" : "bg-night"}`} />
                     <div className="text-ink">{text}</div>
                     <div className="text-[12px] text-muted">{e.actor} · {fmtDateTime(e.at)}{typeof d.note === "string" && d.note ? <span className="text-ink-2"> · “{d.note}”</span> : null}</div>
                   </li>

@@ -25,7 +25,7 @@ export default async function SkuPage({ params, searchParams }: PageProps<"/sku/
   return (
     <>
       <SkuHeader rec={rec} distributor={run.result.distributors[rec.Distributor_ID]}
-        right={<Link href={withRun("/", run.id)} className="shrink-0 text-[12.5px] font-semibold text-lime hover:underline">← Decision desk</Link>} />
+        right={<Link href={withRun("/", run.id)} className="shrink-0 text-[12.5px] font-semibold text-spice hover:underline">← Decision desk</Link>} />
       <div className="mx-auto grid max-w-[1320px] gap-6 px-4 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:px-10">
         <div className="overflow-hidden rounded-[var(--radius-xl)] border border-line bg-paper-2 shadow-[var(--shadow-1)]">
           <SkuBody runId={run.id} rec={rec} decision={decision} history={history} config={c} />
@@ -39,7 +39,7 @@ export default async function SkuPage({ params, searchParams }: PageProps<"/sku/
               <ol className="relative space-y-3 border-l border-line pl-5">
                 {events.map((e) => (
                   <li key={e.id} className="relative text-[13px]">
-                    <span aria-hidden className="absolute -left-[25px] top-1.5 h-2 w-2 rounded-full bg-forest" />
+                    <span aria-hidden className="absolute -left-[25px] top-1.5 h-2 w-2 rounded-full bg-night" />
                     <div>{e.kind === "decision" ? String(e.detail.kind) : "Decision undone"}{e.kind === "decision" && e.detail.decision === "order" ? ` · ${units(Number(e.detail.qty))} units` : ""}</div>
                     <div className="text-[12px] text-muted">{e.actor} · {fmtDateTime(e.at)}{typeof e.detail.note === "string" && e.detail.note ? <span className="text-ink-2"> · “{e.detail.note}”</span> : null}</div>
                   </li>

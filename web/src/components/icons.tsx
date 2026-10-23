@@ -42,10 +42,10 @@ export const IconUndo = (p: SVGProps<SVGSVGElement>) => <Icon {...p}><path d="M9
 export function Mark({ size = 28 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden>
-      <circle cx="16" cy="16" r="15" fill="var(--forest-3)" />
-      <ellipse cx="16" cy="16" rx="12" ry="5" fill="none" stroke="var(--lime)" strokeOpacity=".55" strokeWidth="1.2" transform="rotate(-24 16 16)" />
-      <circle cx="16" cy="16" r="5" fill="var(--lime)" />
-      <circle cx="26.4" cy="11.3" r="1.6" fill="var(--ivory)" />
+      <circle cx="16" cy="16" r="15" fill="var(--night-3)" />
+      <ellipse cx="16" cy="16" rx="12" ry="5" fill="none" stroke="var(--spice)" strokeOpacity=".55" strokeWidth="1.2" transform="rotate(-24 16 16)" />
+      <circle cx="16" cy="16" r="5" fill="var(--spice)" />
+      <circle cx="26.4" cy="11.3" r="1.6" fill="var(--cream)" />
     </svg>
   );
 }

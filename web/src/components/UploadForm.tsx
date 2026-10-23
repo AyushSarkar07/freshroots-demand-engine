@@ -56,8 +56,8 @@ export function UploadForm({ defaultDate }: { defaultDate: string }) {
           const picked = chosen[f.key];
           return (
             <label key={f.key}
-              className={`group relative flex cursor-pointer items-center gap-3 rounded-[var(--radius-lg)] border px-3.5 py-3 transition-colors duration-150 focus-within:border-forest ${picked ? "border-ok/40 bg-ok-soft/50" : "border-dashed border-line-strong bg-paper hover:border-forest/50 hover:bg-paper-3"}`}>
-              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius)] ${picked ? "bg-forest text-lime" : "bg-paper-3 text-muted"}`}>
+              className={`group relative flex cursor-pointer items-center gap-3 rounded-[var(--radius-lg)] border px-3.5 py-3 transition-colors duration-150 focus-within:border-night ${picked ? "border-ok/40 bg-ok-soft/50" : "border-dashed border-line-strong bg-paper hover:border-night/50 hover:bg-paper-3"}`}>
+              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius)] ${picked ? "bg-night text-spice" : "bg-paper-3 text-muted"}`}>
                 {picked ? <IconCheck width={16} height={16} strokeWidth={2.2} /> : <IconFile width={16} height={16} />}
               </span>
               <span className="min-w-0 flex-1">

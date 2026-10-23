@@ -77,7 +77,7 @@ export function DecisionControls({ runId, rec, decision, compact = false }: {
     return (
       <div className="text-[12.5px]" onClick={(e) => e.stopPropagation()}>
         <div className="flex flex-wrap items-center gap-2">
-          <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold ${ordered ? "bg-lime text-forest" : "bg-paper-3 text-ink-2"}`}>
+          <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-semibold ${ordered ? "bg-spice text-night" : "bg-paper-3 text-ink-2"}`}>
             {ordered ? <IconCheck width={13} height={13} strokeWidth={2.4} /> : null}
             {ordered ? `${units(decision.qty)} approved` : "No order"}
           </span>

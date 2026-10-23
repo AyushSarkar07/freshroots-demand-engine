@@ -19,8 +19,8 @@ function RangeRule({ title, lo, hi, note }: { title: string; lo: number; hi: num
       <div className="relative h-14">
         <div className="absolute inset-x-0 top-3 flex h-6 overflow-hidden rounded-[var(--radius-sm)]">
           <div className="flex h-full items-center justify-center bg-crit-soft text-[11.5px] font-semibold text-crit" style={{ width: p(lo) }}>Reorder</div>
-          <div className="flex h-full items-center justify-center bg-ok-soft text-[11.5px] font-semibold text-ok" style={{ width: `calc(${p(hi)} - ${p(lo)})`, boxShadow: "inset 0 0 0 1px rgb(77 122 23 / 0.28)" }}>In range</div>
-          <div className="flex h-full flex-1 items-center justify-center bg-warn-soft text-[11.5px] font-semibold text-warn">Pause</div>
+          <div className="flex h-full items-center justify-center bg-ok-soft text-[11.5px] font-semibold text-ok" style={{ width: `calc(${p(hi)} - ${p(lo)})`, boxShadow: "inset 0 0 0 1px rgb(59 102 38 / 0.3)" }}>In range</div>
+          <div className="flex h-full flex-1 items-center justify-center bg-over-soft text-[11.5px] font-semibold text-over-ink">Pause</div>
         </div>
         {[lo, hi].map((v) => (
           <div key={v} className="absolute top-0 h-11 w-px bg-ink" style={{ left: p(v) }}>
@@ -40,7 +40,7 @@ function SurgeScale({ c }: { c: EngineConfig }) {
     <div>
       <div className="relative mt-2 h-14">
         <div className="absolute inset-x-0 top-4 h-2 rounded-full bg-paper-3" />
-        <div className="absolute top-4 h-2 rounded-r-full bg-coral/70" style={{ left: p(c.surge_ratio_threshold), right: 0 }} />
+        <div className="absolute top-4 h-2 rounded-r-full bg-under/70" style={{ left: p(c.surge_ratio_threshold), right: 0 }} />
         <div className="absolute top-1 h-8 w-0.5 bg-ink" style={{ left: p(c.surge_ratio_threshold) }} />
         <span className="tnum absolute top-10 -translate-x-1/2 text-[12px] font-semibold" style={{ left: p(c.surge_ratio_threshold) }}>{c.surge_ratio_threshold.toFixed(2)}</span>
         <span className="tnum absolute top-10 -translate-x-1/2 text-[11.5px] text-muted" style={{ left: p(1) }}>1.00</span>
@@ -68,7 +68,7 @@ export default async function Rules({ searchParams }: PageProps<"/rules">) {
         <Panel eyebrow="Rule 1 · demand" title="Two windows of weekly sales">
           <div className="flex gap-1" aria-hidden>
             {Array.from({ length: c.long_window_weeks }, (_, i) => (
-              <div key={i} className={`h-10 flex-1 rounded-[4px] ${i >= c.long_window_weeks - c.short_window_weeks ? "bg-forest" : "bg-paper-3"}`} />
+              <div key={i} className={`h-10 flex-1 rounded-[4px] ${i >= c.long_window_weeks - c.short_window_weeks ? "bg-night" : "bg-paper-3"}`} />
             ))}
           </div>
           <div className="tnum mt-1.5 flex justify-between text-[11.5px] text-muted"><span>{c.long_window_weeks} weeks ago</span><span className="font-semibold text-ink">last {c.short_window_weeks} weeks</span><span>latest complete week</span></div>
@@ -80,7 +80,7 @@ export default async function Rules({ searchParams }: PageProps<"/rules">) {
             {MONTHS.map((m, i) => {
               const on = c.festival_months.includes(i + 1);
               return (
-                <div key={m} className={`rounded-[var(--radius-sm)] px-1 py-2.5 text-center ${on ? "bg-lime text-forest" : "bg-paper-3 text-muted"}`}>
+                <div key={m} className={`rounded-[var(--radius-sm)] px-1 py-2.5 text-center ${on ? "bg-spice text-night" : "bg-paper-3 text-muted"}`}>
                   <div className="text-[12px] font-semibold">{m}</div>
                   <div className="tnum text-[11px]">{on ? `+${c.seasonal_uplift_pct}%` : "—"}</div>
                 </div>
@@ -122,7 +122,7 @@ export default async function Rules({ searchParams }: PageProps<"/rules">) {
               ["Zoho places the order", "The app exports approved lines and never contacts a supplier."],
             ].map(([t, d], i) => (
               <li key={t} className="flex gap-3">
-                <span className="tnum flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-forest text-[11.5px] font-bold text-lime">{i + 1}</span>
+                <span className="tnum flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-night text-[11.5px] font-bold text-spice">{i + 1}</span>
                 <div><div className="font-semibold">{t}</div><p className="text-ink-2">{d}</p></div>
               </li>
             ))}

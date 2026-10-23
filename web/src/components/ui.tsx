@@ -24,18 +24,18 @@ export function Panel({ title, eyebrow, sub, right, children, className = "", id
 }
 
 export function Eyebrow({ children, dark = false }: { children: ReactNode; dark?: boolean }) {
-  return <div className={`mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] ${dark ? "text-sage" : "text-muted"}`}>{children}</div>;
+  return <div className={`mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] ${dark ? "text-mist" : "text-muted"}`}>{children}</div>;
 }
 
 export function PageHeader({ eyebrow, title, sub, right }: { eyebrow: string; title: string; sub?: ReactNode; right?: ReactNode }) {
   return (
-    <div className="on-dark relative overflow-hidden bg-forest px-5 pb-10 pt-8 text-ivory sm:px-8 lg:px-10">
+    <div className="on-dark relative overflow-hidden bg-night px-5 pb-10 pt-8 text-cream sm:px-8 lg:px-10">
       <div className="coord-grid pointer-events-none absolute inset-0" aria-hidden />
       <div className="relative flex flex-wrap items-end justify-between gap-4">
         <div className="reveal">
           <Eyebrow dark>{eyebrow}</Eyebrow>
           <h1 className="font-display text-[34px] font-semibold leading-[1.05] tracking-[-0.02em] sm:text-[42px]">{title}</h1>
-          {sub && <p className="mt-2 max-w-2xl text-[14px] text-sage">{sub}</p>}
+          {sub && <p className="mt-2 max-w-2xl text-[14px] text-mist">{sub}</p>}
         </div>
         {right}
       </div>
@@ -47,10 +47,10 @@ export function PageHeader({ eyebrow, title, sub, right }: { eyebrow: string; ti
 
 type Variant = "primary" | "ghost" | "danger" | "dark" | "quiet";
 const VARIANT: Record<Variant, string> = {
-  primary: "bg-lime text-forest hover:bg-[#d4f77f] active:bg-lime-deep shadow-[inset_0_-1px_0_rgb(16_27_24/0.15)]",
+  primary: "bg-spice text-night hover:bg-spice-hover active:bg-spice-deep shadow-[inset_0_-1px_0_rgb(27_17_32/0.15)]",
   ghost: "border border-line-strong bg-paper-2 text-ink hover:bg-paper-3 active:bg-line",
-  danger: "bg-crit text-white hover:bg-[#9c3420]",
-  dark: "bg-forest text-ivory hover:bg-forest-3",
+  danger: "bg-crit text-white hover:bg-[#962a1b]",
+  dark: "bg-night text-cream hover:bg-night-3",
   quiet: "text-ink-2 hover:bg-paper-3",
 };
 
@@ -69,9 +69,9 @@ export const buttonClass = (variant: Variant = "primary", size: "sm" | "md" = "m
 
 /* ------------------------------------------------------------------ status */
 
-export const ACTION_META: Record<string, { label: string; short: string; tone: "crit" | "warn" | "ok" | "neutral"; Icon: typeof IconUp }> = {
+export const ACTION_META: Record<string, { label: string; short: string; tone: "crit" | "warn" | "over" | "ok" | "neutral"; Icon: typeof IconUp }> = {
   IMMEDIATE_REORDER: { label: "Reorder now", short: "Reorder", tone: "crit", Icon: IconUp },
-  PAUSE_ORDER: { label: "Pause next order", short: "Pause", tone: "warn", Icon: IconPause },
+  PAUSE_ORDER: { label: "Pause next order", short: "Pause", tone: "over", Icon: IconPause },
   MAINTAIN: { label: "In range", short: "In range", tone: "ok", Icon: IconCheck },
   MANUAL_REVIEW: { label: "Planner review", short: "Review", tone: "neutral", Icon: IconQuestion },
 };
@@ -79,10 +79,11 @@ export const ACTION_META: Record<string, { label: string; short: string; tone: "
 const TONE: Record<string, string> = {
   crit: "bg-crit-soft text-crit",
   warn: "bg-warn-soft text-warn",
+  over: "bg-over-soft text-over-ink",
   ok: "bg-ok-soft text-ok",
   neutral: "bg-neutral-soft text-ink-2 ring-1 ring-inset ring-line-strong [--tw-ring-style:dashed]",
-  lime: "bg-lime text-forest",
-  dark: "bg-forest-3 text-ivory",
+  lime: "bg-spice text-night",
+  dark: "bg-night-3 text-cream",
   plain: "bg-paper-3 text-ink-2",
 };
 
@@ -111,7 +112,7 @@ export function DqTag({ status, notes }: { status: string; notes?: string }) {
 
 /** Small dot + label, for system status on dark surfaces. */
 export function StatusDot({ tone, children }: { tone: "ok" | "warn" | "crit"; children: ReactNode }) {
-  const c = tone === "ok" ? "bg-lime" : tone === "warn" ? "bg-amber" : "bg-coral";
+  const c = tone === "ok" ? "bg-ok-fill" : tone === "warn" ? "bg-amber" : "bg-under";
   return (
     <span className="inline-flex items-center gap-2 text-[12.5px]">
       <span className="relative flex h-2 w-2">
@@ -131,8 +132,8 @@ export function EmptyState({ title, children, action }: { title: string; childre
       <svg width="120" height="64" viewBox="0 0 120 64" aria-hidden className="mb-4">
         <ellipse cx="60" cy="32" rx="54" ry="18" fill="none" stroke="var(--line-strong)" strokeDasharray="3 5" />
         <ellipse cx="60" cy="32" rx="34" ry="11" fill="none" stroke="var(--line-strong)" />
-        <circle cx="60" cy="32" r="7" fill="var(--lime)" />
-        <circle cx="106" cy="25" r="3" fill="var(--forest)" />
+        <circle cx="60" cy="32" r="7" fill="var(--spice)" />
+        <circle cx="106" cy="25" r="3" fill="var(--night)" />
       </svg>
       <div className="font-display text-[18px] font-semibold tracking-tight">{title}</div>
       {children && <p className="mt-1.5 max-w-md text-[13.5px] text-muted">{children}</p>}
@@ -158,7 +159,7 @@ export function Tip({ label, children, side = "top", block = false }: { label: s
     <span className={`group/tip relative ${block ? "flex w-full" : "inline-flex"}`}>
       {children}
       <span role="tooltip"
-        className={`pointer-events-none absolute left-1/2 z-40 w-max max-w-[260px] -translate-x-1/2 rounded-md bg-forest px-2.5 py-1.5 text-left text-[12px] font-normal leading-snug text-ivory opacity-0 shadow-[var(--shadow-2)] transition-opacity duration-150 group-hover/tip:opacity-100 group-focus-within/tip:opacity-100 ${side === "top" ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]"}`}>
+        className={`pointer-events-none absolute left-1/2 z-40 w-max max-w-[260px] -translate-x-1/2 rounded-md bg-night px-2.5 py-1.5 text-left text-[12px] font-normal leading-snug text-cream opacity-0 shadow-[var(--shadow-2)] transition-opacity duration-150 group-hover/tip:opacity-100 group-focus-within/tip:opacity-100 ${side === "top" ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]"}`}>
         {label}
       </span>
     </span>

@@ -2,10 +2,10 @@
 export default function Loading() {
   return (
     <div aria-busy="true" aria-label="Loading">
-      <div className="bg-forest px-5 pb-24 pt-12 sm:px-8 lg:px-10">
-        <div className="h-3 w-56 rounded bg-forest-3" />
-        <div className="mt-5 h-16 w-[min(560px,80%)] rounded-[var(--radius)] bg-forest-2" />
-        <div className="mt-3 h-16 w-[min(420px,60%)] rounded-[var(--radius)] bg-forest-2" />
+      <div className="bg-night px-5 pb-24 pt-12 sm:px-8 lg:px-10">
+        <div className="h-3 w-56 rounded bg-night-3" />
+        <div className="mt-5 h-16 w-[min(560px,80%)] rounded-[var(--radius)] bg-night-2" />
+        <div className="mt-3 h-16 w-[min(420px,60%)] rounded-[var(--radius)] bg-night-2" />
       </div>
       <div className="mx-auto -mt-16 grid max-w-[1320px] gap-4 px-4 sm:px-8 lg:grid-cols-12 lg:px-10">
         <div className="skeleton h-[420px] lg:col-span-6" />

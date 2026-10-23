@@ -29,10 +29,10 @@ function eventText(e: EventRecord): string {
 
 function Tile({ label, value, note, tone }: { label: string; value: string; note: string; tone?: "ok" | "warn" | "crit" }) {
   return (
-    <div className="rounded-[var(--radius-lg)] border border-forest-line bg-forest-2 p-4">
-      <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-sage">{label}</div>
-      <div className="tnum mt-1.5 font-display text-[22px] font-semibold tracking-tight text-ivory">{value}</div>
-      <div className={`mt-0.5 text-[12px] ${tone === "crit" ? "text-coral" : tone === "warn" ? "text-amber" : tone === "ok" ? "text-lime" : "text-sage"}`}>{note}</div>
+    <div className="rounded-[var(--radius-lg)] border border-night-line bg-night-2 p-4">
+      <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-mist">{label}</div>
+      <div className="tnum mt-1.5 font-display text-[22px] font-semibold tracking-tight text-cream">{value}</div>
+      <div className={`mt-0.5 text-[12px] ${tone === "crit" ? "text-under" : tone === "warn" ? "text-amber" : tone === "ok" ? "text-ok-fill" : "text-mist"}`}>{note}</div>
     </div>
   );
 }
@@ -72,7 +72,7 @@ export default async function Data({ searchParams }: PageProps<"/data">) {
                 {runs.map((r) => {
                   const on = r.id === run?.id;
                   return (
-                    <li key={r.id} className={`relative py-3 ${on ? "before:absolute before:-left-6 before:inset-y-2 before:w-[3px] before:rounded-full before:bg-lime-deep" : ""}`}>
+                    <li key={r.id} className={`relative py-3 ${on ? "before:absolute before:-left-6 before:inset-y-2 before:w-[3px] before:rounded-full before:bg-spice-deep" : ""}`}>
                       <div className="flex items-center justify-between gap-2">
                         <Link href={`/data?run=${r.id}`} className="tnum text-[13.5px] font-semibold hover:underline">{fmtDate(r.evaluation_date)} · {r.sales_cutoff_week}</Link>
                         {on ? <Tag tone="lime">Viewing</Tag> : <Link href={`/?run=${r.id}`} className="text-[12px] font-semibold text-ok hover:underline">Open →</Link>}
@@ -143,7 +143,7 @@ export default async function Data({ searchParams }: PageProps<"/data">) {
               <ol className="relative space-y-3 border-l border-line pl-5">
                 {events.map((e) => (
                   <li key={e.id} className="relative text-[13px]">
-                    <span aria-hidden className="absolute -left-[25px] top-1.5 h-2 w-2 rounded-full bg-forest" />
+                    <span aria-hidden className="absolute -left-[25px] top-1.5 h-2 w-2 rounded-full bg-night" />
                     <div className="text-ink">{eventText(e)}</div>
                     <div className="tnum text-[12px] text-muted">{e.actor} · {fmtDateTime(e.at)}</div>
                   </li>
