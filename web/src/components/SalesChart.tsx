@@ -51,7 +51,7 @@ export function SalesChart({ history, avg12, avg4, baseline, longWeeks = 12, sho
             <text x={L - 6} y={y(t) + 4} fontSize={10.5} textAnchor="end" fill="var(--muted)" className="tnum">{t >= 1000 ? `${t / 1000}K` : t}</text>
           </g>
         ))}
-        <rect x={L + shortStart * slot} y={T} width={(n - shortStart) * slot} height={ph} fill="var(--s1-soft)" />
+        <rect x={L + shortStart * slot} y={T} width={(n - shortStart) * slot} height={ph} fill="var(--series-soft)" />
         {history.map((h, i) => {
           const top = y(h.units);
           const height = T + ph - top;
@@ -61,7 +61,7 @@ export function SalesChart({ history, avg12, avg4, baseline, longWeeks = 12, sho
               <rect x={L + i * slot} y={T} width={slot} height={ph} fill="transparent" />
               <path
                 d={`M${x(i)},${T + ph} V${top + r} Q${x(i)},${top} ${x(i) + r},${top} H${x(i) + bw - r} Q${x(i) + bw},${top} ${x(i) + bw},${top + r} V${T + ph} Z`}
-                fill="var(--s1)" opacity={i < longStart ? 0.35 : hover === i ? 0.8 : 1}
+                fill="var(--series)" opacity={i < longStart ? 0.35 : hover === i ? 0.8 : 1}
               />
             </g>
           );
@@ -80,7 +80,7 @@ export function SalesChart({ history, avg12, avg4, baseline, longWeeks = 12, sho
         ) : null))}
       </svg>
       {hover != null && (
-        <div className="pointer-events-none absolute -translate-x-1/2 rounded-md border border-line bg-card px-2 py-1 text-[12px] shadow-sm"
+        <div className="pointer-events-none absolute -translate-x-1/2 rounded-md border border-line bg-paper-2 px-2 py-1 text-[12px] shadow-[var(--shadow-2)]"
           style={{ left: `${((L + hover * slot + slot / 2) / W) * 100}%`, top: 0 }}>
           <div className="font-medium">{history[hover].week}</div>
           <div className="tnum text-ink-2">{history[hover].units.toLocaleString("en-IN")} units</div>

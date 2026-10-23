@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { ExportButton } from "@/components/ExportButton";
 import { UploadForm } from "@/components/UploadForm";
-import { Card, Empty, Pill } from "@/components/ui";
+import { EmptyState, PageHeader, Panel, StatusDot, Tag } from "@/components/ui";
 import { getConfig } from "@/lib/config";
 import { fmtDate, fmtDateTime, todayIST, units } from "@/lib/format";
+import { freshness } from "@/lib/insights";
 import { loadRun } from "@/lib/runs";
 import { getStore } from "@/lib/store";
 import type { EventRecord } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-const SEV: Record<string, "bad" | "warn" | "info"> = { ERROR: "bad", WARNING: "warn", INFO: "info" };
+const SEV: Record<string, "crit" | "warn" | "plain"> = { ERROR: "crit", WARNING: "warn", INFO: "plain" };
 
 function eventText(e: EventRecord): string {
   const d = e.detail;
@@ -21,9 +22,19 @@ function eventText(e: EventRecord): string {
     case "notification": return d.live ? "Procurement notified on Telegram" : `Procurement notification simulated (Telegram not configured)${d.error ? `: ${d.error}` : ""}`;
     case "decision": return `${e.sku_id}: ${d.kind}${d.decision === "order" ? `, ${units(Number(d.qty))} units` : ""}${d.note ? ` (“${d.note}”)` : ""}`;
     case "decision_cleared": return `${e.sku_id}: decision undone`;
-    case "po_exported": return `Purchase orders exported (${d.distributor === "all" ? "all distributors" : d.distributor}, ${d.lines} lines, ${units(Number(d.units))} units)`;
+    case "po_exported": return `Purchase orders exported (${d.distributor === "all" ? "all distributors" : d.distributor}, ${d.lines} line${d.lines === 1 ? "" : "s"}, ${units(Number(d.units))} units)`;
     default: return e.kind;
   }
+}
+
+function Tile({ label, value, note, tone }: { label: string; value: string; note: string; tone?: "ok" | "warn" | "crit" }) {
+  return (
+    <div className="rounded-[var(--radius-lg)] border border-forest-line bg-forest-2 p-4">
+      <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-sage">{label}</div>
+      <div className="tnum mt-1.5 font-display text-[22px] font-semibold tracking-tight text-ivory">{value}</div>
+      <div className={`mt-0.5 text-[12px] ${tone === "crit" ? "text-coral" : tone === "warn" ? "text-amber" : tone === "ok" ? "text-lime" : "text-sage"}`}>{note}</div>
+    </div>
+  );
 }
 
 export default async function Data({ searchParams }: PageProps<"/data">) {
@@ -33,98 +44,121 @@ export default async function Data({ searchParams }: PageProps<"/data">) {
   const [runs, events] = await Promise.all([store.listRuns(), run ? store.listEvents(run.id) : Promise.resolve([])]);
   const cfg = getConfig();
   const dq = run?.result.data_quality ?? [];
+  const fresh = run ? freshness(run.result) : null;
+  const errors = dq.filter((d) => d.Severity === "ERROR").length;
+  const warnings = dq.filter((d) => d.Severity === "WARNING").length;
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h1 className="font-serif text-[28px] leading-tight tracking-tight">Data & runs</h1>
-        <p className="mt-1 text-[13px] text-ink-2">Upload the SAP export every Monday and Thursday. Every file is checked before any SKU gets a recommendation, and nothing missing is treated as zero.</p>
-      </div>
+    <>
+      <PageHeader eyebrow="Data & runs" title="Inputs you can trust"
+        sub="Upload the SAP export every Monday and Thursday. Every row is checked before any SKU gets a recommendation; nothing missing is treated as zero, and a bad row holds only its own SKU."
+        right={fresh && (
+          <div className="grid w-full grid-cols-2 gap-3 sm:w-auto sm:grid-cols-4">
+            <Tile label="Stock snapshot" value={fresh.snapshot ? fmtDate(fresh.snapshot) : "—"} note={fresh.snapshotAgeDays != null ? `${fresh.snapshotAgeDays} day${fresh.snapshotAgeDays === 1 ? "" : "s"} before evaluation` : "No valid snapshot"} tone={fresh.stale ? "warn" : "ok"} />
+            <Tile label="Latest sales week" value={fresh.salesWeek} note={`Evaluated ${fmtDate(run!.evaluation_date)}`} />
+            <Tile label="Validation" value={errors ? `${errors} error${errors === 1 ? "" : "s"}` : warnings ? `${warnings} warning${warnings === 1 ? "" : "s"}` : "Passed"} note={fresh.statusText} tone={fresh.status} />
+            <Tile label="Last run" value={fmtDate(run!.created_at)} note={`by ${run!.created_by}`} />
+          </div>
+        )} />
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_380px]">
-        <Card title="Upload a new export" sub="Same five CSVs the IT team exports from SAP. Columns are matched by name.">
-          <UploadForm defaultDate={todayIST()} />
-        </Card>
-        <Card title="Runs" sub="Newest first. Each run keeps its own decisions.">
-          <ul className="divide-y divide-line text-[13px]">
-            {runs.map((r) => (
-              <li key={r.id} className={`py-2 ${r.id === run?.id ? "font-medium" : ""}`}>
-                <Link href={`/data?run=${r.id}`} className="hover:text-accent">
-                  {fmtDate(r.evaluation_date)} · sales to {r.sales_cutoff_week}
-                </Link>
-                <div className="text-[12px] font-normal text-muted">
-                  {r.label} · {r.created_by} · {fmtDateTime(r.created_at)}
-                </div>
-                <div className="mt-0.5 flex flex-wrap gap-1 text-[11.5px] font-normal">
-                  <Pill>{r.kpis.immediate_reorder_skus} reorder</Pill>
-                  <Pill>{r.kpis.skus_requiring_manual_review} review</Pill>
-                  {r.dq_errors ? <Pill tone="bad">{r.dq_errors} errors</Pill> : <Pill tone="good">✓ data</Pill>}
-                  {r.id !== run?.id && <Link href={`/?run=${r.id}`} className="text-accent hover:underline">open →</Link>}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
+      <div className="mx-auto max-w-[1320px] space-y-6 px-4 py-8 sm:px-8 lg:px-10">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+          <Panel eyebrow="New run" title="Upload an SAP export" sub="The same five CSVs the IT team exports. Columns are matched by name.">
+            <UploadForm defaultDate={todayIST()} />
+          </Panel>
+          <Panel eyebrow="History" title="Runs" sub="Newest first. Each run keeps its own decisions.">
+            {runs.length ? (
+              <ul className="-my-2 divide-y divide-line">
+                {runs.map((r) => {
+                  const on = r.id === run?.id;
+                  return (
+                    <li key={r.id} className={`relative py-3 ${on ? "before:absolute before:-left-6 before:inset-y-2 before:w-[3px] before:rounded-full before:bg-lime-deep" : ""}`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <Link href={`/data?run=${r.id}`} className="tnum text-[13.5px] font-semibold hover:underline">{fmtDate(r.evaluation_date)} · {r.sales_cutoff_week}</Link>
+                        {on ? <Tag tone="lime">Viewing</Tag> : <Link href={`/?run=${r.id}`} className="text-[12px] font-semibold text-ok hover:underline">Open →</Link>}
+                      </div>
+                      <div className="mt-0.5 truncate text-[12px] text-muted">{r.label} · {r.created_by} · {fmtDateTime(r.created_at)}</div>
+                      <div className="mt-1.5 flex flex-wrap gap-1">
+                        <Tag tone="crit">{r.kpis.immediate_reorder_skus} reorder</Tag>
+                        <Tag tone="neutral">{r.kpis.skus_requiring_manual_review} review</Tag>
+                        {r.dq_errors ? <Tag tone="crit">{r.dq_errors} errors</Tag> : <Tag tone="ok">Data passed</Tag>}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : <p className="text-[13px] text-muted">No runs yet.</p>}
+          </Panel>
+        </div>
 
-      {run && (
-        <>
-          <Card title={`Inputs for the run evaluated ${fmtDate(run.evaluation_date)}`}
-            right={<div className="flex gap-2"><ExportButton small href={`/api/runs/${run.id}/export?type=recommendations`} label="Recommendations CSV" /><ExportButton small href={`/api/runs/${run.id}/export?type=dq`} label="Data-quality CSV" /></div>}>
-            <div className="-mx-4 overflow-x-auto sm:mx-0">
-              <table className="w-full min-w-[560px] text-[13px]">
-                <thead><tr className="border-b border-line text-left text-[11.5px] uppercase tracking-wide text-muted"><th className="py-2 pl-4 font-medium sm:pl-0">File</th><th className="px-3 py-2 text-right font-medium">Size</th><th className="py-2 pl-3 pr-4 font-medium sm:pr-0">SHA-256 (audit fingerprint)</th></tr></thead>
-                <tbody>
-                  {run.input_meta.map((f) => (
-                    <tr key={f.name} className="border-b border-line last:border-0">
-                      <td className="py-2 pl-4 sm:pl-0">{f.file}</td>
-                      <td className="tnum px-3 py-2 text-right text-ink-2">{units(f.bytes)} B</td>
-                      <td className="py-2 pl-3 pr-4 font-mono text-[11.5px] text-muted sm:pr-0">{f.sha256.slice(0, 16)}…</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p className="mt-2 text-[12px] text-muted">
-              Calendar: {run.result.calendar.available ? `${run.result.calendar.granularity ?? "unrecognised"} calendar${run.result.calendar.evaluation_month ? `, ${run.result.calendar.evaluation_month} festival = ${String(run.result.calendar.evaluation_month_calendar_festival)}` : ""}` : "not supplied"} · engine v{run.result.engine_version} · inventory policy: {run.result.config.inventory_aggregation.replace(/_/g, " ")}
-            </p>
-          </Card>
-
-          <Card title="Data-quality report" sub={`${dq.filter((d) => d.Severity === "ERROR").length} errors, ${dq.filter((d) => d.Severity === "WARNING").length} warnings, ${dq.filter((d) => d.Severity === "INFO").length} info. Errors hold the affected SKU for planner review.`}>
-            {dq.length === 0 ? <Empty>✓ Every row of every file passed validation.</Empty> : (
-              <div className="-mx-4 overflow-x-auto sm:mx-0">
-                <table className="w-full min-w-[720px] text-[12.5px]">
-                  <thead><tr className="border-b border-line text-left text-[11.5px] uppercase tracking-wide text-muted"><th className="py-2 pl-4 font-medium sm:pl-0">Severity</th><th className="px-2 py-2 font-medium">File · line</th><th className="px-2 py-2 font-medium">SKU</th><th className="px-2 py-2 font-medium">Issue</th><th className="py-2 pl-2 pr-4 font-medium sm:pr-0">What happened</th></tr></thead>
-                  <tbody>
-                    {dq.map((d, i) => (
-                      <tr key={i} className="border-b border-line align-top last:border-0">
-                        <td className="py-2 pl-4 sm:pl-0"><Pill tone={SEV[d.Severity]}>{d.Severity.toLowerCase()}</Pill></td>
-                        <td className="px-2 py-2 text-ink-2">{d.Source_File}{d.Row_Number ? ` · ${d.Row_Number}` : ""}</td>
-                        <td className="px-2 py-2 font-mono text-[11.5px]">{d.SKU_ID || "—"}</td>
-                        <td className="px-2 py-2"><span className="font-mono text-[11.5px]">{d.Issue_Code}</span><div className="text-ink-2">{d.Detail}</div></td>
-                        <td className="py-2 pl-2 pr-4 text-ink-2 sm:pr-0">{d.Disposition.replace(/_/g, " ").toLowerCase()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+        {run && (
+          <>
+            <Panel eyebrow="Audit" title={`Inputs for the run evaluated ${fmtDate(run.evaluation_date)}`}
+              sub={`Engine v${run.result.engine_version} · calendar ${run.result.calendar.available ? `${run.result.calendar.granularity ?? "unrecognised"}${run.result.calendar.evaluation_month ? `, ${run.result.calendar.evaluation_month} festival = ${String(run.result.calendar.evaluation_month_calendar_festival)}` : ""}` : "not supplied"} · inventory policy: ${run.result.config.inventory_aggregation.replace(/_/g, " ")}`}
+              right={<div className="flex flex-wrap gap-2">
+                <ExportButton small href={`/api/runs/${run.id}/export?type=recommendations`} label="Recommendations CSV" filename={`reorder_recommendations_${run.evaluation_date}.csv`} />
+                <ExportButton small href={`/api/runs/${run.id}/export?type=dq`} label="Data-quality CSV" filename={`data_quality_report_${run.evaluation_date}.csv`} />
+              </div>}>
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                {run.input_meta.map((f) => (
+                  <div key={f.name} className="rounded-[var(--radius)] border border-line bg-paper px-3 py-2.5">
+                    <div className="truncate text-[13px] font-semibold">{f.file}</div>
+                    <div className="tnum text-[12px] text-muted">{units(f.bytes)} bytes</div>
+                    <div className="mt-1 truncate font-mono text-[11px] text-muted" title={`SHA-256 ${f.sha256}`}>{f.sha256.slice(0, 16)}…</div>
+                  </div>
+                ))}
               </div>
-            )}
-          </Card>
+            </Panel>
 
-          <Card title="Activity log" sub="Everything that happened in this run, newest first.">
-            <ol className="space-y-2 text-[12.5px]">
-              {events.map((e) => (
-                <li key={e.id} className="flex flex-wrap gap-x-3 border-l-2 border-line pl-3">
-                  <span className="tnum w-32 shrink-0 text-muted">{fmtDateTime(e.at)}</span>
-                  <span className="flex-1 text-ink">{eventText(e)}</span>
-                  <span className="text-muted">{e.actor}</span>
-                </li>
-              ))}
-            </ol>
-          </Card>
-        </>
-      )}
-      <p className="text-[12px] text-muted">Storage: {cfg.db === "postgres" ? "Postgres" : "in memory (set DATABASE_URL to keep runs)"} · Brief: {cfg.ai === "gemini" ? `Gemini ${cfg.geminiModel}` : "template (set GEMINI_API_KEY)"} · Notifications: {cfg.telegram === "live" ? "Telegram" : "simulated (set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID)"}</p>
-    </div>
+            <Panel eyebrow="Validation" title="Data-quality report"
+              sub={`${errors} errors, ${warnings} warnings, ${dq.length - errors - warnings} info. An error holds the affected SKU for planner review; everything else still gets a recommendation.`}>
+              {dq.length === 0 ? (
+                <EmptyState title="Every row passed">All five files were read and checked: no missing, conflicting, negative or out-of-date values.</EmptyState>
+              ) : (
+                <div className="-mx-5 overflow-x-auto sm:-mx-6">
+                  <table className="w-full min-w-[760px] text-[12.5px]">
+                    <thead>
+                      <tr className="border-b border-line text-left text-[11px] uppercase tracking-[0.1em] text-muted">
+                        <th className="py-2 pl-6 font-semibold">Severity</th><th className="px-2 py-2 font-semibold">File · line</th><th className="px-2 py-2 font-semibold">SKU</th>
+                        <th className="px-2 py-2 font-semibold">Issue</th><th className="py-2 pl-2 pr-6 font-semibold">What happened</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dq.map((d, i) => (
+                        <tr key={i} className="border-b border-line align-top last:border-0">
+                          <td className="py-2.5 pl-6"><Tag tone={SEV[d.Severity]}>{d.Severity.toLowerCase()}</Tag></td>
+                          <td className="tnum px-2 py-2.5 text-ink-2">{d.Source_File}{d.Row_Number ? ` · ${d.Row_Number}` : ""}</td>
+                          <td className="px-2 py-2.5 font-mono text-[11.5px]">{d.SKU_ID || "—"}</td>
+                          <td className="px-2 py-2.5"><span className="font-mono text-[11.5px]">{d.Issue_Code}</span><div className="text-ink-2">{d.Detail}</div></td>
+                          <td className="py-2.5 pl-2 pr-6 text-ink-2">{d.Disposition.replace(/_/g, " ").toLowerCase()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Panel>
+
+            <Panel eyebrow="Audit" title="Activity log" sub="Everything that happened in this run, newest first.">
+              <ol className="relative space-y-3 border-l border-line pl-5">
+                {events.map((e) => (
+                  <li key={e.id} className="relative text-[13px]">
+                    <span aria-hidden className="absolute -left-[25px] top-1.5 h-2 w-2 rounded-full bg-forest" />
+                    <div className="text-ink">{eventText(e)}</div>
+                    <div className="tnum text-[12px] text-muted">{e.actor} · {fmtDateTime(e.at)}</div>
+                  </li>
+                ))}
+              </ol>
+            </Panel>
+          </>
+        )}
+
+        <p className="flex flex-wrap items-center gap-x-5 gap-y-1 text-[12px] text-muted">
+          <StatusDot tone={cfg.db === "postgres" ? "ok" : "warn"}>{cfg.db === "postgres" ? "Runs stored in Postgres" : "In-memory store: set DATABASE_URL to keep runs"}</StatusDot>
+          <StatusDot tone={cfg.ai === "gemini" ? "ok" : "warn"}>{cfg.ai === "gemini" ? `Brief: Gemini ${cfg.geminiModel}` : "Brief: template (set GEMINI_API_KEY)"}</StatusDot>
+          <StatusDot tone={cfg.telegram === "live" ? "ok" : "warn"}>{cfg.telegram === "live" ? "Alerts: Telegram" : "Alerts simulated (set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID)"}</StatusDot>
+        </p>
+      </div>
+    </>
   );
 }

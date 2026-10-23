@@ -14,6 +14,21 @@ Twice a week, the analyst uploads the SAP export. The engine applies Raghav's do
 | `/data` | Upload a new export, run history, input file fingerprints, the data-quality report, and the activity log |
 | `/rules` | The rules in plain English, with the thresholds the run used |
 
+## Design system ("The Freshroots Control Room")
+
+- **Tokens.** All tokens live in `src/app/globals.css`: palette, spacing, radii, elevation and motion.
+- **Surfaces and colour.**
+  - Dark forest carries context: the sidebar, hero and detail headers.
+  - Warm ivory carries work: tables, forms and panels.
+  - Lime is the single accent.
+  - Coral marks stockout risk, amber marks overstock, and green means in range.
+- **Typography.** Bricolage Grotesque for display, Inter for data, with tabular numerals throughout.
+- **Signature object.** `OrbitCore` is pure CSS 3D with no library. Each point is a real SKU, placed on the orbit for its decision. It pauses when off-screen and stays still under `prefers-reduced-motion`.
+- **Data-driven visuals.**
+  - `CoverGauge` (weeks of stock against the SKU's own range) and `DemandPulse` (last 12 weeks, plus the 4-week and 12-week averages) read the engine's values and never recalculate them.
+  - `tests/insights.test.ts` checks that both visuals agree with the engine's flags on every dataset.
+- **Interaction.** Toasts appear only after the server confirms an action. Undo and partial exports ask for confirmation. The SKU drawer syncs to `?sku=` and closes on Escape.
+
 ## How it fits together
 
 - **Engine.** `src/lib/engine/` is a TypeScript port of `../freshroots_engine.py`. `tests/parity.test.ts` checks that both engines produce identical decisions, data-quality records and explanations on three datasets: the real export, the sample data and a deliberately messy fixture. After changing either engine, regenerate the golden files with `../.venv/bin/python ../scripts/export_golden.py`.

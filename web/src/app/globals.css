@@ -1,87 +1,209 @@
 @import "tailwindcss";
 
+/*
+ * Freshroots Control Room design tokens.
+ * Dark forest carries context (navigation, hero, detail headers); warm ivory carries work
+ * (tables, forms, panels). Lime is the single accent: primary actions, active states, the
+ * signature orbit. Coral = critical (stockout risk), amber = warning (overstock), lime = healthy.
+ */
 :root {
   color-scheme: light;
-  --page: #f4f4ef;
-  --card: #fcfcfa;
-  --ink: #171a16;
-  --ink-2: #4d524a;
-  --muted: #80867c;
-  --line: #e3e5dc;
-  --line-strong: #cfd3c6;
-  --accent: #2d6a3e; /* Freshroots leaf green */
-  --accent-soft: #e2eee1;
-  --grid: #e3e4dd;
-  --axis: #c3c6ba;
-  --s1: #2a78d6; /* chart series slot 1 */
-  --s1-soft: #2a78d61a;
-  /* Status: always paired with an icon and a label. */
-  --good: #0c7a0c;
-  --good-soft: #e3f1e1;
-  --warn: #9a6400;
-  --warn-soft: #fbf0d9;
-  --bad: #b8312f;
-  --bad-soft: #f9e1df;
-  --info: #256abf;
-  --info-soft: #e1ecf9;
-}
 
-@media (prefers-color-scheme: dark) {
-  :root:where(:not([data-theme="light"])) {
-    color-scheme: dark;
-    --page: #111311;
-    --card: #191b19;
-    --ink: #f1f2ec;
-    --ink-2: #c2c6ba;
-    --muted: #8c9186;
-    --line: #2a2d29;
-    --line-strong: #3a3e38;
-    --accent: #7cc48c;
-    --accent-soft: #1d3322;
-    --grid: #2a2c29;
-    --axis: #3a3d37;
-    --s1: #3987e5;
-    --s1-soft: #3987e526;
-    --good: #3fbf3f;
-    --good-soft: #17301a;
-    --warn: #e0a72e;
-    --warn-soft: #33290f;
-    --bad: #ef7471;
-    --bad-soft: #3a1b1a;
-    --info: #6da7ec;
-    --info-soft: #17263a;
-  }
+  /* Brand palette */
+  --forest: #101b18;
+  --forest-2: #192820;
+  --forest-3: #203128;
+  --forest-line: #2d4236;
+  --lime: #c9f36a;
+  --lime-deep: #a9d94a;
+  --ivory: #f3f5ec;
+  --sage: #9eada4;
+  --amber: #ffb36b;
+  --coral: #f2785e;
+
+  /* Light working surfaces */
+  --paper: #f3f5ec;
+  --paper-2: #fbfcf7;
+  --paper-3: #e8ece0;
+  --ink: #101b18;
+  --ink-2: #3c4b43;
+  --muted: #5c6b62;
+  --line: #dde3d6;
+  --line-strong: #c4cdbd;
+
+  /* Status: fills for marks, inks for text on paper (all >= 4.5:1 on --paper-2) */
+  --ok: #426b14;
+  --ok-soft: #e4f3c6;
+  --warn: #8a5208;
+  --warn-soft: #fde9d2;
+  --crit: #b23e27;
+  --crit-soft: #fbe1da;
+  --neutral-soft: #e6eae2;
+
+  /* Chart */
+  --series: #2f5a46;
+  --series-soft: #2f5a4614;
+  --grid: #e3e8dc;
+  --axis: #c4cdbd;
+
+  /* Spacing, radii, elevation, motion */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --shadow-1: 0 1px 0 rgb(16 27 24 / 0.04), 0 1px 2px rgb(16 27 24 / 0.06);
+  --shadow-2: 0 1px 0 rgb(16 27 24 / 0.04), 0 12px 32px -16px rgb(16 27 24 / 0.28);
+  --shadow-3: 0 24px 64px -24px rgb(6 12 10 / 0.55);
+  --dur-fast: 150ms;
+  --dur: 220ms;
+  --dur-slow: 300ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.32, 0.64, 1);
 }
 
 @theme inline {
-  --color-page: var(--page);
-  --color-card: var(--card);
+  --color-forest: var(--forest);
+  --color-forest-2: var(--forest-2);
+  --color-forest-3: var(--forest-3);
+  --color-forest-line: var(--forest-line);
+  --color-lime: var(--lime);
+  --color-lime-deep: var(--lime-deep);
+  --color-ivory: var(--ivory);
+  --color-sage: var(--sage);
+  --color-amber: var(--amber);
+  --color-coral: var(--coral);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-paper-3: var(--paper-3);
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
-  --color-accent: var(--accent);
-  --color-accent-soft: var(--accent-soft);
-  --color-good: var(--good);
-  --color-good-soft: var(--good-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
   --color-warn: var(--warn);
   --color-warn-soft: var(--warn-soft);
-  --color-bad: var(--bad);
-  --color-bad-soft: var(--bad-soft);
-  --color-info: var(--info);
-  --color-info-soft: var(--info-soft);
+  --color-crit: var(--crit);
+  --color-crit-soft: var(--crit-soft);
+  --color-neutral-soft: var(--neutral-soft);
   --font-sans: var(--font-sans-face), system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-serif: var(--font-serif-face), Georgia, serif;
+  --font-display: var(--font-display-face), var(--font-sans-face), system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --radius-card: var(--radius-lg);
+  --shadow-card: var(--shadow-1);
+  --shadow-lift: var(--shadow-2);
 }
 
+html {
+  background: var(--forest);
+}
 body {
-  background: var(--page);
+  background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
 .tnum {
   font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--lime-deep);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.on-dark :focus-visible {
+  outline-color: var(--lime);
+}
+
+::selection {
+  background: var(--lime);
+  color: var(--forest);
+}
+
+/* ---------------------------------------------------------------- motion */
+
+/* Starts mostly visible: if a throttled or background tab never advances the animation,
+   content is still readable instead of stuck at opacity 0. */
+@keyframes rise {
+  from { opacity: 0.55; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes orbit-spin {
+  to { transform: rotateZ(360deg); }
+}
+@keyframes orbit-spin-rev {
+  to { transform: rotateZ(-360deg); }
+}
+@keyframes core-breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.035); }
+}
+@keyframes drawer-in {
+  from { transform: translateX(24px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes toast-in {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+.reveal {
+  animation: rise 520ms var(--ease) both;
+}
+.reveal-1 { animation-delay: 40ms; }
+.reveal-2 { animation-delay: 110ms; }
+.reveal-3 { animation-delay: 180ms; }
+.reveal-4 { animation-delay: 250ms; }
+.reveal-5 { animation-delay: 320ms; }
+
+.lift {
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--paper-3) 0%, #f0f3ea 50%, var(--paper-3) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: var(--radius);
+}
+
+/* The hero's coordinate grid: fine lines, fading out towards the edges. */
+.coord-grid {
+  background-image:
+    linear-gradient(to right, rgb(201 243 106 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(201 243 106 / 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 70% 80% at 70% 45%, #000 20%, transparent 75%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+  }
+  .lift:hover {
+    transform: none;
+  }
 }
