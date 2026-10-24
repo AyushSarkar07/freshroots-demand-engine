@@ -12,6 +12,7 @@ export function getConfig() {
     ai: env("GEMINI_API_KEY") ? ("gemini" as const) : ("template" as const),
     geminiModel: env("GEMINI_MODEL") ?? "gemini-3.8-flash",
     telegram: env("TELEGRAM_BOT_TOKEN") && env("TELEGRAM_CHAT_ID") ? ("live" as const) : ("simulated" as const),
+    slack: env("SLACK_WEBHOOK_URL") ? ("live" as const) : ("simulated" as const),
     appUrl: env("APP_URL") ?? (env("VERCEL_PROJECT_PRODUCTION_URL") ? `https://${env("VERCEL_PROJECT_PRODUCTION_URL")}` : "http://localhost:3000"),
     /** Evaluation date used for the bundled case export, so the seeded run is reproducible. */
     caseEvaluationDate: env("CASE_EVALUATION_DATE") ?? "2026-10-22",

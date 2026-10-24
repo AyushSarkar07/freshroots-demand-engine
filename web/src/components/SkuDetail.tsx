@@ -46,8 +46,8 @@ export function SkuHeader({ rec, distributor, titleId, right }: { rec: Recommend
   );
 }
 
-export function SkuBody({ runId, rec, decision, history, config }: {
-  runId: string; rec: Recommendation; decision: DecisionRecord | null; history: { week: string; units: number }[]; config: EngineConfig;
+export function SkuBody({ runId, rec, decision, history, config, readOnly = false }: {
+  runId: string; rec: Recommendation; decision: DecisionRecord | null; history: { week: string; units: number }[]; config: EngineConfig; readOnly?: boolean;
 }) {
   const range = coverRange(rec.Perishability, config);
   const cw = coverWord(rec.weeks_of_stock, range);
@@ -58,7 +58,7 @@ export function SkuBody({ runId, rec, decision, history, config }: {
       <section aria-label="Decision" className="rounded-[var(--radius-lg)] border border-line bg-paper p-4">
         <div className="mb-2 text-[12px] font-semibold uppercase tracking-[0.1em] text-muted">Your decision</div>
         {rec.Action === "MANUAL_REVIEW" && <p className="mb-3 text-[13px] text-ink-2">The rules can&apos;t decide this SKU: {reviewText(rec)}. This is Raghav&apos;s call.</p>}
-        <DecisionControls runId={runId} rec={rec} decision={decision} />
+        <DecisionControls runId={runId} rec={rec} decision={decision} readOnly={readOnly} />
       </section>
 
       <section aria-label="Stock cover">

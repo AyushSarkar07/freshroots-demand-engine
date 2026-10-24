@@ -18,6 +18,7 @@ export async function POST(req: NextRequest, ctx: RouteContext<"/api/runs/[id]/d
   const run = await store.getRun(id);
   const rec = run?.result.recommendations.find((r) => r.SKU_ID === body.sku_id);
   if (!run || !rec) return NextResponse.json({ error: "Run or SKU not found." }, { status: 404 });
+  if (run.source === "scenario") return NextResponse.json({ error: "This is a simulation. Scenario runs can't be approved." }, { status: 409 });
 
   const input = {
     decision: body.decision ?? "order",

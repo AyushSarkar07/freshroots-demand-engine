@@ -223,6 +223,16 @@ class TestDataQuality(EngineTestCase):
         self.assertDecision(r, None, "MANUAL_REVIEW", 0, review=True)
         self.assertIn("INSUFFICIENT_HISTORY", r["Data_Quality_Notes"])
 
+    def test_15b_no_sales_history_at_all(self):
+        # The database simulation exercise: an existing SKU whose sales rows are all deleted.
+        fx = Fixture().sku("A", "Low", weekly=[], on_hand=300).sku("B", "Low", on_hand=300)
+        res = self.run_engine(fx)
+        a = self.row(res, "A")
+        self.assertDecision(a, None, "MANUAL_REVIEW", 0, review=True)
+        self.assertEqual(a["weeks_observed_12w"], 0)
+        self.assertIn("INSUFFICIENT_HISTORY: Only 0 of 12 weeks in the baseline window (no valid sales history)", a["Data_Quality_Notes"])
+        self.assertDecision(self.row(res, "B"), "STOCKOUT_RISK", "IMMEDIATE_REORDER", 500)
+
     def test_16_missing_inventory_value_and_record(self):
         fx = Fixture().sku("A", "Low", locations=[("Pune DC", "")]).sku("B", "Low")  # B has no inventory row
         res = self.run_engine(fx)

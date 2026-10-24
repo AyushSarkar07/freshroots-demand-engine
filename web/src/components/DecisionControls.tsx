@@ -12,14 +12,14 @@ import { fmtDateTime, units } from "@/lib/format";
 import { shortName } from "@/lib/insights";
 import type { DecisionRecord } from "@/lib/types";
 
-type Mode = null | "edit" | "reject" | "order" | "no_order";
+type Mode = null | "confirm" | "edit" | "reject" | "order" | "no_order";
 
 /**
  * Approve, edit or reject one SKU. The engine's quantity is the default; any change needs a
  * reason. Success is only announced after the server has stored the decision.
  */
-export function DecisionControls({ runId, rec, decision, compact = false }: {
-  runId: string; rec: Recommendation; decision: DecisionRecord | null; compact?: boolean;
+export function DecisionControls({ runId, rec, decision, compact = false, readOnly = false }: {
+  runId: string; rec: Recommendation; decision: DecisionRecord | null; compact?: boolean; readOnly?: boolean;
 }) {
   const router = useRouter();
   const toast = useToast();
@@ -69,6 +69,10 @@ export function DecisionControls({ runId, rec, decision, compact = false }: {
       action: { label: "Undo", run: () => void remove(by) },
     });
     router.refresh();
+  }
+
+  if (readOnly) {
+    return <span className="text-[12.5px] text-muted">Simulation: decisions are disabled</span>;
   }
 
   if (decision) {
@@ -127,6 +131,24 @@ export function DecisionControls({ runId, rec, decision, compact = false }: {
     </div>
   );
 
+  // Deliberate friction: approving restates what is being approved and why, and needs a second click.
+  // There is no "approve all": every order is read and confirmed on its own.
+  if (mode === "confirm") {
+    return (
+      <div className="space-y-2 rounded-[var(--radius)] border border-spice-deep/40 bg-spice/10 p-2.5 text-[12.5px]" onClick={(e) => e.stopPropagation()}>
+        <div className="font-semibold text-ink">Approve {units(rec.Recommended_Order_Qty)} units of {name}?</div>
+        <div className="text-ink-2">
+          {rec.weeks_of_stock != null ? `${rec.weeks_of_stock.toFixed(1)} weeks of stock left` : "Stock cover unknown"} · {units(rec.Units_On_Hand)} on hand
+          {rec.demand_spurt_flag ? ` · demand surge, ${units(rec.Standard_Reorder_Qty)} × ${rec.reorder_multiplier}` : ""}
+        </div>
+        <div className="flex gap-2">
+          <Button size="sm" disabled={busy} onClick={() => submit("order", rec.Recommended_Order_Qty, "")}>{busy ? "Saving…" : "Confirm approval"}</Button>
+          <Button size="sm" variant="quiet" onClick={() => setMode(null)}>Cancel</Button>
+        </div>
+        {error && <div role="alert" className="text-crit">{error}</div>}
+      </div>
+    );
+  }
   if (mode === "edit") return form("Approve edited quantity", "order", true, "Why change the quantity? (required)");
   if (mode === "reject") return form("Reject: no order", "no_order", false, "Why not order? (required)");
   if (mode === "order") return form("Place order", "order", true, isReview ? "Planner's reasoning (required)" : "Why order against the rules? (required)");
@@ -138,8 +160,8 @@ export function DecisionControls({ runId, rec, decision, compact = false }: {
       <div className="flex flex-wrap gap-1.5">
         {isReorder && (
           <>
-            <Button size="sm" disabled={busy || nameMissing} onClick={() => submit("order", rec.Recommended_Order_Qty, "")}>
-              {busy ? "Saving…" : <>Approve {units(rec.Recommended_Order_Qty)}</>}
+            <Button size="sm" disabled={busy || nameMissing} onClick={() => setMode("confirm")}>
+              Approve {units(rec.Recommended_Order_Qty)}…
             </Button>
             <Button size="sm" variant="ghost" onClick={() => setMode("edit")}>Edit</Button>
             <Button size="sm" variant="ghost" onClick={() => setMode("reject")}>Reject</Button>

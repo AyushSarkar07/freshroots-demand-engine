@@ -9,9 +9,9 @@ import { withRun } from "@/lib/format";
 import type { DecisionRecord } from "@/lib/types";
 
 /** Right-hand SKU panel. Escape or the close button dismisses it; focus returns to where it was. */
-export function SkuDrawer({ runId, rec, decision, history, config, distributor, onClose }: {
+export function SkuDrawer({ runId, rec, decision, history, config, distributor, onClose, readOnly = false }: {
   runId: string; rec: Recommendation; decision: DecisionRecord | null; history: { week: string; units: number }[];
-  config: EngineConfig; distributor?: { name: string; status: string }; onClose: () => void;
+  config: EngineConfig; distributor?: { name: string; status: string }; onClose: () => void; readOnly?: boolean;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const returnTo = useRef<Element | null>(null);
@@ -41,7 +41,7 @@ export function SkuDrawer({ runId, rec, decision, history, config, distributor, 
               <IconClose width={16} height={16} />
             </button>
           } />
-        <SkuBody runId={runId} rec={rec} decision={decision} history={history} config={config} />
+        <SkuBody runId={runId} rec={rec} decision={decision} history={history} config={config} readOnly={readOnly} />
         <div className="mt-auto border-t border-line px-6 py-4">
           <Link href={withRun(`/sku/${rec.SKU_ID}`, runId)} className="inline-flex items-center gap-1 text-[13px] font-semibold text-ok hover:underline">
             Full page with weekly sales and decision history <IconArrowUpRight width={14} height={14} />

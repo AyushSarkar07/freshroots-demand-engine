@@ -42,6 +42,9 @@ create table if not exists events (
   at timestamptz not null default now()
 );
 create index if not exists events_run_idx on events (run_id, at desc);
+create index if not exists events_kind_idx on events (kind, at desc);
+alter table runs add column if not exists base_run_id text;
+alter table runs add column if not exists scenario jsonb;
 `;
 
 async function db() {
@@ -66,6 +69,8 @@ const toRun = (r: Row): RunRecord => ({
   input_meta: r.input_meta as RunRecord["input_meta"],
   result: r.result as RunRecord["result"],
   brief: (r.brief as PlannerBrief) ?? null,
+  base_run_id: (r.base_run_id as string) ?? null,
+  scenario: (r.scenario as RunRecord["scenario"]) ?? null,
 });
 const toDecision = (r: Row): DecisionRecord => ({
   run_id: r.run_id as string, sku_id: r.sku_id as string, decision: r.decision as DecisionRecord["decision"],
@@ -90,14 +95,15 @@ export class PostgresStore implements Store {
   }
   async latestRunId() {
     const s = await db();
-    const [r] = await s`select id from runs order by created_at desc limit 1`;
+    const [r] = await s`select id from runs where source <> 'scenario' order by created_at desc limit 1`;
     return (r?.id as string) ?? null;
   }
   async createRun(run: RunRecord) {
     const s = await db();
-    await s`insert into runs (id, created_at, created_by, source, label, evaluation_date, inputs, input_meta, result, brief)
+    await s`insert into runs (id, created_at, created_by, source, label, evaluation_date, inputs, input_meta, result, brief, base_run_id, scenario)
       values (${run.id}, ${run.created_at}, ${run.created_by}, ${run.source}, ${run.label}, ${run.evaluation_date},
-              ${json(run.inputs)}, ${json(run.input_meta)}, ${json(run.result)}, ${run.brief ? json(run.brief) : null})
+              ${json(run.inputs)}, ${json(run.input_meta)}, ${json(run.result)}, ${run.brief ? json(run.brief) : null},
+              ${run.base_run_id ?? null}, ${run.scenario ? json(run.scenario) : null})
       on conflict (id) do nothing`;
   }
   async setBrief(runId: string, brief: PlannerBrief) {
@@ -129,5 +135,14 @@ export class PostgresStore implements Store {
       ? await s`select * from events where run_id = ${runId} order by at desc, id desc limit 200`
       : await s`select * from events where run_id = ${runId} and sku_id = ${skuId} order by at desc, id desc`;
     return rows.map(toEvent);
+  }
+  async listEventsByKind(kinds: EventRecord["kind"][], limit = 500) {
+    const s = await db();
+    return (await s`select * from events where kind = any(${kinds}) order by at desc, id desc limit ${limit}`).map(toEvent);
+  }
+  async listDecisionsForRuns(runIds: string[]) {
+    if (!runIds.length) return [];
+    const s = await db();
+    return (await s`select * from decisions where run_id = any(${runIds})`).map(toDecision);
   }
 }

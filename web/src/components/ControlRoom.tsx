@@ -21,6 +21,7 @@ export function ControlRoom(props: {
   calendarAgrees: boolean | null;
   stats: { actionable: number; decided: number; pendingReorders: number; pendingReviews: number; approvedUnits: number };
   initialSku: string | null;
+  readOnly?: boolean;
 }) {
   const { runId, recs, decisions, config, history } = props;
   const pending = recs.some((r) => (r.Action === "IMMEDIATE_REORDER" || r.Action === "MANUAL_REVIEW") && !decisions.some((d) => d.sku_id === r.SKU_ID));
@@ -58,11 +59,11 @@ export function ControlRoom(props: {
       <Bento runId={runId} recs={recs} config={config} history={history} brief={props.brief} fresh={props.fresh}
         calendarAgrees={props.calendarAgrees} stats={props.stats} approvedBySku={approvedBySku} onFilter={jumpTo} onOpen={open} />
       <div className="mt-6">
-        <DecisionDesk runId={runId} recs={recs} decisions={decisions} config={config} filter={filter} setFilter={setFilter} selected={selected} onOpen={open} />
+        <DecisionDesk runId={runId} recs={recs} decisions={decisions} config={config} filter={filter} setFilter={setFilter} selected={selected} onOpen={open} readOnly={props.readOnly} />
       </div>
       {rec && (
         <SkuDrawer key={rec.SKU_ID} runId={runId} rec={rec} decision={decisions.find((d) => d.sku_id === rec.SKU_ID) ?? null}
-          history={history[rec.SKU_ID] ?? []} config={config} distributor={props.distributors[rec.Distributor_ID]} onClose={close} />
+          history={history[rec.SKU_ID] ?? []} config={config} distributor={props.distributors[rec.Distributor_ID]} onClose={close} readOnly={props.readOnly} />
       )}
     </>
   );

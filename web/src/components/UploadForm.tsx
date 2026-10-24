@@ -47,6 +47,7 @@ export function UploadForm({ defaultDate }: { defaultDate: string }) {
     }
     toast({ tone: "success", title: "Run complete", body: "The engine decided every SKU in the new export." });
     router.push(`/?run=${body.id}`);
+    router.refresh(); // refresh the layout's run list too
   }
 
   return (

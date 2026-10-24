@@ -1,4 +1,8 @@
-import { PageHeader, Panel } from "@/components/ui";
+import { IconDownload } from "@/components/icons";
+import { RulebookAsk } from "@/components/RulebookAsk";
+import { PageHeader, Panel, Tag, buttonClass } from "@/components/ui";
+import { CONFLICT_LABEL, type ConflictCode } from "@/lib/conflicts";
+import { CONFLICT_POLICY, CONSTANTS, PEOPLE, ruleDocs, VARIABLES } from "@/lib/governance";
 import { DEFAULT_CONFIG, type EngineConfig } from "@/lib/engine/config";
 import { loadRun } from "@/lib/runs";
 
@@ -58,6 +62,7 @@ export default async function Rules({ searchParams }: PageProps<"/rules">) {
   const sp = await searchParams;
   const run = await loadRun(typeof sp.run === "string" ? sp.run : null);
   const c = run?.result.config ?? DEFAULT_CONFIG;
+  const docs = ruleDocs(c);
 
   return (
     <>
@@ -130,6 +135,51 @@ export default async function Rules({ searchParams }: PageProps<"/rules">) {
           <p className="mt-4 text-[12px] text-muted">Not modelled: supplier pack sizes, minimum order quantities, lead times, safety stock, and sales lost to past stockouts.</p>
         </Panel>
       </div>
+
+      <section id="rulebook" className="mx-auto max-w-[1320px] scroll-mt-24 space-y-6 px-4 pb-10 sm:px-8 lg:px-10">
+        <Panel eyebrow="Institutional memory" title="Rulebook"
+          sub="Why each rule exists, its edge cases and its owner, written down so the logic survives people changing roles. Ask it a question, or download it."
+          right={<a href={`/api/rulebook${run ? `?run=${run.id}` : ""}`} className={buttonClass("ghost", "sm")}><IconDownload width={15} height={15} /> Download (.md)</a>}>
+          <RulebookAsk runId={run?.id} />
+        </Panel>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          {docs.map((r) => (
+            <article id={r.id} key={r.id} className="scroll-mt-24 rounded-[var(--radius-xl)] border border-line bg-paper-2 p-5 shadow-[var(--shadow-1)]">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded bg-night px-1.5 py-0.5 font-mono text-[11.5px] text-spice">{r.id}</span>
+                <h3 className="font-display text-[18px] font-semibold tracking-tight">{r.title}</h3>
+                <Tag tone={r.kind === "variable" ? "warn" : "plain"}>{r.kind}</Tag>
+              </div>
+              <p className="mt-2 text-[13.5px] font-medium">{r.rule}</p>
+              <p className="mt-2 text-[13px] text-ink-2"><b className="font-semibold text-ink">Why it exists.</b> {r.why}</p>
+              <ul className="mt-2 space-y-1 text-[12.5px] text-ink-2">{r.edges.map((e) => <li key={e} className="flex gap-2"><span aria-hidden className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-ink-2" />{e}</li>)}</ul>
+              <div className="mt-3 text-[12px] text-muted">Owner: <b className="font-semibold text-ink">{PEOPLE[r.owner].name}</b> ({PEOPLE[r.owner].role}) · Source: {r.source}</div>
+            </article>
+          ))}
+        </div>
+
+        <Panel eyebrow="Mapped before go-live" title="Conflict map" sub="Where two rules can disagree for the same SKU, which one wins, and what the monthly review should ask. Every instance is logged on Oversight.">
+          <ul className="divide-y divide-line">
+            {(Object.keys(CONFLICT_POLICY) as ConflictCode[]).map((k, i) => (
+              <li id={`C${i + 1}`} key={k} className="grid scroll-mt-24 gap-x-6 gap-y-1 py-3 text-[13px] md:grid-cols-[220px_minmax(0,1fr)_minmax(0,1fr)]">
+                <div><span className="font-mono text-[11.5px] text-muted">C{i + 1}</span> <b className="font-semibold">{CONFLICT_LABEL[k]}</b></div>
+                <div className="text-ink-2"><b className="font-semibold text-ink">Winner:</b> {CONFLICT_POLICY[k].winner}</div>
+                <div className="text-ink-2"><b className="font-semibold text-ink">Review:</b> {CONFLICT_POLICY[k].review} <span className="text-muted">({PEOPLE[CONFLICT_POLICY[k].owner].name})</span></div>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+
+        <div id="V1" className="grid scroll-mt-24 gap-4 md:grid-cols-2">
+          <Panel eyebrow="Expect these to change" title="Variables" sub="Review them when the business or the data changes; each has an owner in the rulebook.">
+            <ul className="space-y-1.5 text-[13px] text-ink-2">{VARIABLES.map((v) => <li key={v} className="flex gap-2"><span aria-hidden className="mt-2 h-1 w-3 shrink-0 rounded-full bg-amber" />{v}</li>)}</ul>
+          </Panel>
+          <Panel eyebrow="Hold these by design" title="Constants" sub="Changing any of these changes what the system is, not how it's tuned.">
+            <ul className="space-y-1.5 text-[13px] text-ink-2">{CONSTANTS.map((v) => <li key={v} className="flex gap-2"><span aria-hidden className="mt-2 h-1 w-3 shrink-0 rounded-full bg-night" />{v}</li>)}</ul>
+          </Panel>
+        </div>
+      </section>
     </>
   );
 }

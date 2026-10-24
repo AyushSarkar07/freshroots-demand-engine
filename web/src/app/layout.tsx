@@ -22,7 +22,7 @@ export const dynamic = "force-dynamic";
 async function runContexts(): Promise<RunContext[]> {
   try {
     await ensureSeeded();
-    return (await getStore().listRuns()).map((r) => ({ id: r.id, evaluation_date: r.evaluation_date, sales_cutoff_week: r.sales_cutoff_week, label: r.label }));
+    return (await getStore().listRuns()).map((r) => ({ id: r.id, source: r.source, evaluation_date: r.evaluation_date, sales_cutoff_week: r.sales_cutoff_week, label: r.label }));
   } catch {
     return []; // the page itself reports the failure; navigation must still render
   }
@@ -44,7 +44,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
                   <span>Engine v{ENGINE_VERSION} · rules-based, deterministic</span>
                   <span>Storage: {cfg.db === "postgres" ? "Postgres" : "in memory"}</span>
                   <span>Brief: {cfg.ai === "gemini" ? `Gemini (${cfg.geminiModel}), number-checked` : "template"}</span>
-                  <span>Alerts: {cfg.telegram === "live" ? "Telegram" : "simulated"}</span>
+                  <span>Alerts: {[cfg.telegram === "live" && "Telegram", cfg.slack === "live" && "Slack"].filter(Boolean).join(" + ") || "simulated"}</span>
                   <span className="sm:ml-auto">No order leaves this app without a named approver.</span>
                 </div>
               </footer>

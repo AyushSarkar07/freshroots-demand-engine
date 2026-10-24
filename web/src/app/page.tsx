@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AttentionBanner } from "@/components/AttentionBanner";
 import { ControlRoom } from "@/components/ControlRoom";
 import { OrbitCore } from "@/components/OrbitCore";
 import { EmptyState, StatusDot, buttonClass } from "@/components/ui";
@@ -23,7 +24,10 @@ export default async function Decisions({ searchParams }: PageProps<"/">) {
     );
   }
 
-  const decisions = await getStore().listDecisions(run.id);
+  const store = getStore();
+  const [decisions, events] = await Promise.all([store.listDecisions(run.id), store.listEvents(run.id)]);
+  const warnings = events.filter((e) => e.kind === "early_warning");
+  const isScenario = run.source === "scenario";
   const r = run.result;
   const stats = approvalStats(run, decisions);
   const fresh = freshness(r);
@@ -35,6 +39,12 @@ export default async function Decisions({ searchParams }: PageProps<"/">) {
 
   return (
     <>
+      {isScenario && (
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-spice px-5 py-2.5 text-[13px] text-night sm:px-8 lg:px-10">
+          <span><b className="font-semibold uppercase tracking-[0.12em]">Simulation</b> · {run.label}. Approvals and purchase-order exports are disabled.</span>
+          <Link href={`/compare?run=${run.id}`} className="font-semibold underline">Compare with the original run →</Link>
+        </div>
+      )}
       <section className="on-dark relative overflow-hidden bg-night text-cream">
         <div aria-hidden className="coord-grid pointer-events-none absolute inset-0" />
         <div aria-hidden className="pointer-events-none absolute right-[-10%] top-[-30%] h-[620px] w-[620px] rounded-full bg-[radial-gradient(circle,rgb(245_180_39/0.15),transparent_62%)]" />
@@ -65,7 +75,8 @@ export default async function Decisions({ searchParams }: PageProps<"/">) {
       </section>
 
       <div className="relative z-10 mx-auto -mt-16 max-w-[1320px] px-4 pb-12 sm:px-8 lg:px-10">
-        <ControlRoom runId={run.id} recs={r.recommendations} decisions={decisions} config={r.config} history={r.history}
+        <div className="mb-5"><AttentionBanner run={run} warnings={warnings} /></div>
+        <ControlRoom readOnly={isScenario} runId={run.id} recs={r.recommendations} decisions={decisions} config={r.config} history={r.history}
           distributors={r.distributors} brief={run.brief} fresh={fresh} calendarAgrees={calendarAgrees}
           stats={stats} initialSku={typeof sp.sku === "string" ? sp.sku : null} />
       </div>

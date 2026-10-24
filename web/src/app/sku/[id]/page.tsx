@@ -28,7 +28,7 @@ export default async function SkuPage({ params, searchParams }: PageProps<"/sku/
         right={<Link href={withRun("/", run.id)} className="shrink-0 text-[12.5px] font-semibold text-spice hover:underline">← Decision desk</Link>} />
       <div className="mx-auto grid max-w-[1320px] gap-6 px-4 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:px-10">
         <div className="overflow-hidden rounded-[var(--radius-xl)] border border-line bg-paper-2 shadow-[var(--shadow-1)]">
-          <SkuBody runId={run.id} rec={rec} decision={decision} history={history} config={c} />
+          <SkuBody runId={run.id} rec={rec} decision={decision} history={history} config={c} readOnly={run.source === "scenario"} />
         </div>
         <div className="space-y-6">
           <Panel eyebrow="History" title="Weekly sales" sub={`Through ${run.result.sales_cutoff_week}. The 4-week average is compared with the 12-week average to detect a surge.`}>

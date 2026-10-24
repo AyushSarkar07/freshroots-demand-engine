@@ -22,6 +22,9 @@ export const IconData = (p: SVGProps<SVGSVGElement>) => (
 export const IconRules = (p: SVGProps<SVGSVGElement>) => (
   <Icon {...p}><path d="M5 5v14M12 5v14M19 5v14" /><circle cx="5" cy="9" r="2" /><circle cx="12" cy="15" r="2" /><circle cx="19" cy="8" r="2" /></Icon>
 );
+export const IconOversight = (p: SVGProps<SVGSVGElement>) => (
+  <Icon {...p}><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" /><circle cx="12" cy="12" r="3" /></Icon>
+);
 export const IconClose = (p: SVGProps<SVGSVGElement>) => <Icon {...p}><path d="M6 6l12 12M18 6 6 18" /></Icon>;
 export const IconSearch = (p: SVGProps<SVGSVGElement>) => <Icon {...p}><circle cx="11" cy="11" r="6.5" /><path d="m20 20-4.2-4.2" /></Icon>;
 export const IconArrowRight = (p: SVGProps<SVGSVGElement>) => <Icon {...p}><path d="M5 12h14M13 6l6 6-6 6" /></Icon>;

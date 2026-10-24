@@ -16,8 +16,8 @@ type Sort = "urgency" | "cover" | "qty" | "name";
 const RANK: Record<string, number> = { IMMEDIATE_REORDER: 0, MANUAL_REVIEW: 1, PAUSE_ORDER: 2, MAINTAIN: 3 };
 const TREND_CLS: Record<string, string> = { surge: "text-crit", rising: "text-warn", stable: "text-ok", falling: "text-ink-2", unavailable: "text-muted" };
 
-export function DecisionDesk({ runId, recs, decisions, config, filter, setFilter, selected, onOpen }: {
-  runId: string; recs: Recommendation[]; decisions: DecisionRecord[]; config: EngineConfig;
+export function DecisionDesk({ runId, recs, decisions, config, filter, setFilter, selected, onOpen, readOnly = false }: {
+  runId: string; recs: Recommendation[]; decisions: DecisionRecord[]; config: EngineConfig; readOnly?: boolean;
   filter: Filter; setFilter: (f: Filter) => void; selected: string | null; onOpen: (sku: string) => void;
 }) {
   const [q, setQ] = useState("");
@@ -131,7 +131,7 @@ export function DecisionDesk({ runId, recs, decisions, config, filter, setFilter
                     </div>
                   </td>
                   <td className="w-[270px] py-4 pl-3 pr-6 max-md:col-span-2 max-md:w-auto max-md:p-0" onClick={(e) => e.stopPropagation()}>
-                    <DecisionControls runId={runId} rec={r} decision={bySku.get(r.SKU_ID) ?? null} compact />
+                    <DecisionControls runId={runId} rec={r} decision={bySku.get(r.SKU_ID) ?? null} compact readOnly={readOnly} />
                   </td>
                 </tr>
               );

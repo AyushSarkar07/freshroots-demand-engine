@@ -19,7 +19,7 @@ export class MemoryStore implements Store {
     return data().runs.find((r) => r.id === id) ?? null;
   }
   async latestRunId() {
-    return (await this.listRuns())[0]?.id ?? null;
+    return (await this.listRuns()).find((r) => r.source !== "scenario")?.id ?? null;
   }
   async createRun(run: RunRecord) {
     if (!data().runs.some((r) => r.id === run.id)) data().runs.push(run);
@@ -47,5 +47,11 @@ export class MemoryStore implements Store {
   }
   async listEvents(runId: string, skuId?: string) {
     return data().events.filter((e) => e.run_id === runId && (skuId == null || e.sku_id === skuId)).sort((a, b) => b.at.localeCompare(a.at) || b.id! - a.id!);
+  }
+  async listEventsByKind(kinds: EventRecord["kind"][], limit = 500) {
+    return data().events.filter((e) => kinds.includes(e.kind)).sort((a, b) => b.at.localeCompare(a.at) || b.id! - a.id!).slice(0, limit);
+  }
+  async listDecisionsForRuns(runIds: string[]) {
+    return data().decisions.filter((d) => runIds.includes(d.run_id));
   }
 }

@@ -12,6 +12,7 @@ const CASES: Record<string, string> = {
   real: path.join(ROOT, "data"),
   sample: path.join(ROOT, "sample_data"),
   messy: path.join(import.meta.dirname, "fixtures", "messy"),
+  sku009_new_launch: path.join(ROOT, "data_scenarios", "sku009_new_launch"),
 };
 const read = (dir: string, f: string) => readFileSync(path.join(dir, f), "utf8");
 

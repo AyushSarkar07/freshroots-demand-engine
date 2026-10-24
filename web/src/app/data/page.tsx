@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ExportButton } from "@/components/ExportButton";
+import { ScenarioForm } from "@/components/ScenarioForm";
 import { UploadForm } from "@/components/UploadForm";
 import { EmptyState, PageHeader, Panel, StatusDot, Tag } from "@/components/ui";
 import { getConfig } from "@/lib/config";
@@ -19,9 +20,16 @@ function eventText(e: EventRecord): string {
     case "run_created": return `Engine ran: ${d.reorder} to reorder (${units(Number(d.units))} units), ${d.review} for review, ${d.dq_errors} data errors`;
     case "brief_generated": return `Planner brief drafted: “${d.headline}”`;
     case "brief_fallback": return `Planner brief from template (${d.reason ?? "Gemini not configured"})`;
-    case "notification": return d.live ? "Procurement notified on Telegram" : `Procurement notification simulated (Telegram not configured)${d.error ? `: ${d.error}` : ""}`;
+    case "notification": {
+      if (d.skipped) return `Notification skipped: ${d.reason}`;
+      const ds = (d.deliveries as { channel: string; live: boolean; error?: string }[] | undefined) ?? [{ channel: "telegram", live: Boolean(d.live), error: d.error as string | undefined }];
+      return `Procurement alert: ${ds.map((x) => `${x.channel} ${x.live ? "sent" : x.error ? `failed (${x.error})` : "simulated (not configured)"}`).join(", ")}`;
+    }
     case "decision": return `${e.sku_id}: ${d.kind}${d.decision === "order" ? `, ${units(Number(d.qty))} units` : ""}${d.note ? ` (“${d.note}”)` : ""}`;
     case "decision_cleared": return `${e.sku_id}: decision undone`;
+    case "early_warning": return `Early warning (${d.severity}): ${d.name}: ${d.detail}`;
+    case "rule_conflict": return `Rule conflict: ${d.name}: ${d.detail}`;
+    case "drift": return `Data drift: ${d.detail}`;
     case "po_exported": return `Purchase orders exported (${d.distributor === "all" ? "all distributors" : d.distributor}, ${d.lines} line${d.lines === 1 ? "" : "s"}, ${units(Number(d.units))} units)`;
     default: return e.kind;
   }
@@ -42,6 +50,11 @@ export default async function Data({ searchParams }: PageProps<"/data">) {
   const run = await loadRun(typeof sp.run === "string" ? sp.run : null);
   const store = getStore();
   const [runs, events] = await Promise.all([store.listRuns(), run ? store.listEvents(run.id) : Promise.resolve([])]);
+  // Scenario lab: the latest real runs, with their SKUs and distributors for the form.
+  const realRuns = (await Promise.all(runs.filter((r) => r.source !== "scenario").slice(0, 5).map((r) => store.getRun(r.id)))).filter((r) => r != null);
+  const labSkus = Object.fromEntries(realRuns.map((r) => [r.id, r.result.recommendations.map((x) => ({ id: x.SKU_ID, name: x.SKU_Name.replace(/^Freshroots\s+/i, ""), distributor: x.Distributor_ID }))]));
+  const labDists = Object.fromEntries(realRuns.map((r) => [r.id, Object.keys(r.result.distributors)]));
+  const drift = events.filter((e) => e.kind === "drift");
   const cfg = getConfig();
   const dq = run?.result.data_quality ?? [];
   const fresh = run ? freshness(run.result) : null;
@@ -91,11 +104,22 @@ export default async function Data({ searchParams }: PageProps<"/data">) {
           </Panel>
         </div>
 
+        {realRuns.length > 0 && (
+          <section id="scenario-lab" className="scroll-mt-24">
+            <Panel eyebrow="Database simulation" title="Scenario lab"
+              sub="Simulate a new SKU with no history without adding one: delete its sales, add a distributor, remap the SKU, rerun, and compare with the original. Runs on a copy; the real run is never changed.">
+              <ScenarioForm runs={realRuns.map((r) => ({ id: r.id, label: r.label, evaluation_date: r.evaluation_date }))} skus={labSkus} distributors={labDists}
+                defaultRun={run && run.source !== "scenario" ? run.id : realRuns[0].id} />
+            </Panel>
+          </section>
+        )}
+
         {run && (
           <>
             <Panel eyebrow="Audit" title={`Inputs for the run evaluated ${fmtDate(run.evaluation_date)}`}
               sub={`Engine v${run.result.engine_version} · calendar ${run.result.calendar.available ? `${run.result.calendar.granularity ?? "unrecognised"}${run.result.calendar.evaluation_month ? `, ${run.result.calendar.evaluation_month} festival = ${String(run.result.calendar.evaluation_month_calendar_festival)}` : ""}` : "not supplied"} · inventory policy: ${run.result.config.inventory_aggregation.replace(/_/g, " ")}`}
               right={<div className="flex flex-wrap gap-2">
+                <ExportButton small href={`/api/runs/${run.id}/export?type=consolidated`} label="One consolidated table" filename={`consolidated_sku_table_${run.evaluation_date}.csv`} />
                 <ExportButton small href={`/api/runs/${run.id}/export?type=recommendations`} label="Recommendations CSV" filename={`reorder_recommendations_${run.evaluation_date}.csv`} />
                 <ExportButton small href={`/api/runs/${run.id}/export?type=dq`} label="Data-quality CSV" filename={`data_quality_report_${run.evaluation_date}.csv`} />
               </div>}>
@@ -108,6 +132,13 @@ export default async function Data({ searchParams }: PageProps<"/data">) {
                   </div>
                 ))}
               </div>
+            </Panel>
+
+            <Panel eyebrow="Data drift" title={run.base_run_id ? "What changed since the previous run" : "Drift"}
+              sub={run.base_run_id ? <>Compared with the run it followed. <Link className="font-semibold text-ok hover:underline" href={`/compare?run=${run.id}`}>Full comparison →</Link></> : "This is the first run, so there is nothing to compare against yet."}>
+              {drift.length ? (
+                <ul className="space-y-2 text-[13px]">{drift.map((e) => <li key={e.id} className="flex gap-2"><Tag tone="plain">{String(e.detail.code).replace(/_/g, " ").toLowerCase()}</Tag><span className="text-ink-2">{String(e.detail.detail)}</span></li>)}</ul>
+              ) : <p className="text-[13px] text-muted">{run.base_run_id ? "Same SKUs, distributors and file columns as the previous run." : "No earlier run."}</p>}
             </Panel>
 
             <Panel eyebrow="Validation" title="Data-quality report"

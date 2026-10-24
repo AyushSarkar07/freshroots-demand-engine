@@ -3,11 +3,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import { setApprover, useApprover } from "./approver";
-import { IconData, IconDecisions, IconOrders, IconRules, Mark } from "./icons";
+import { IconData, IconDecisions, IconOrders, IconOversight, IconRules, Mark } from "./icons";
 import { fmtDate, withRun } from "@/lib/format";
 
 export interface RunContext {
   id: string;
+  source: string;
   evaluation_date: string;
   sales_cutoff_week: string;
   label: string;
@@ -16,8 +17,9 @@ export interface RunContext {
 const LINKS = [
   { href: "/", label: "Decisions", Icon: IconDecisions, match: (p: string) => p === "/" || p.startsWith("/sku") },
   { href: "/orders", label: "Purchase orders", Icon: IconOrders, match: (p: string) => p.startsWith("/orders") },
-  { href: "/data", label: "Data & runs", Icon: IconData, match: (p: string) => p.startsWith("/data") },
+  { href: "/data", label: "Data & runs", Icon: IconData, match: (p: string) => p.startsWith("/data") || p.startsWith("/compare") },
   { href: "/rules", label: "Rules", Icon: IconRules, match: (p: string) => p.startsWith("/rules") },
+  { href: "/oversight", label: "Oversight", Icon: IconOversight, match: (p: string) => p.startsWith("/oversight") },
 ];
 
 const onPopState = (cb: () => void) => {
@@ -58,8 +60,9 @@ function OperatorField({ compact = false }: { compact?: boolean }) {
 export function Sidebar({ runs }: { runs: RunContext[] }) {
   const path = usePathname();
   const runParam = useRunParam();
-  const run = runs.find((r) => r.id === runParam) ?? runs[0];
-  const isLatest = run && run.id === runs[0]?.id;
+  const latest = runs.find((r) => r.source !== "scenario");
+  const run = runs.find((r) => r.id === runParam) ?? latest;
+  const isLatest = run && run.id === latest?.id;
 
   return (
     <>
@@ -90,7 +93,7 @@ export function Sidebar({ runs }: { runs: RunContext[] }) {
           <div className="mx-3 mt-8 rounded-[var(--radius)] border border-night-line p-3.5">
             <div className="flex items-center justify-between text-[10.5px] font-semibold uppercase tracking-[0.14em] text-mist">
               <span>Viewing run</span>
-              <span className={isLatest ? "text-spice" : "text-amber"}>{isLatest ? "Latest" : "Earlier run"}</span>
+              <span className={run.source === "scenario" ? "text-amber" : isLatest ? "text-spice" : "text-amber"}>{run.source === "scenario" ? "Simulation" : isLatest ? "Latest" : "Earlier run"}</span>
             </div>
             <div className="tnum mt-2 font-display text-[18px] font-semibold">{fmtDate(run.evaluation_date)}</div>
             <div className="tnum text-[12.5px] text-mist">Sales through {run.sales_cutoff_week}</div>

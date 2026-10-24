@@ -2,6 +2,8 @@
 
 **Live app:** https://freshroots-reorderdesk.vercel.app. The app is the Next.js Reorder Desk in [`web/`](web/README.md). It runs a TypeScript port of this engine, checked against it for parity, and adds a Gemini planner brief, named approvals, and per-distributor PO export for Zoho.
 
+**Simulation exercise:** `.venv/bin/python scripts/simulate_new_sku.py` deletes SKU009's sales, adds distributor DIST005, remaps SKU009 to it, reruns the engine and prints the before/after comparison. SKU009 goes from MAINTAIN to MANUAL_REVIEW with a quantity of 0, flagged as having no sales history. The same exercise runs in the app under Data & runs → Scenario lab. The rulebook (why each rule exists, conflicts, failure owners) is in `docs/RULEBOOK.md`.
+
 **Deliverables** (separate from the app) are in `deliverables/`:
 
 - `decision_memo.pdf`: the Nine Checks across all three briefs, plus the Five Pre-Build Decisions.

@@ -20,6 +20,7 @@ CASES = {
     "real": (ROOT / "data", "2026-10-22"),
     "sample": (ROOT / "sample_data", "2026-10-22"),
     "messy": (ROOT / "web" / "tests" / "fixtures" / "messy", "2026-07-15"),
+    "sku009_new_launch": (ROOT / "data_scenarios" / "sku009_new_launch", "2026-10-22"),
 }
 
 

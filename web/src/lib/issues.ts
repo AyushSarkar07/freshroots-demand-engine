@@ -20,8 +20,9 @@ export const ISSUE_LABEL: Record<string, string> = {
 };
 
 /** Why a SKU is in MANUAL_REVIEW, in words a planner would use. */
-export function reviewText(r: Pick<Recommendation, "Action" | "Review_Reasons">): string {
+export function reviewText(r: Pick<Recommendation, "Action" | "Review_Reasons"> & { weeks_observed_12w?: number }): string {
   if (r.Action !== "MANUAL_REVIEW") return "";
+  if (r.weeks_observed_12w === 0 && /INSUFFICIENT_HISTORY/.test(r.Review_Reasons)) return "no sales history at all (new SKU?)";
   const m = /^data-quality hold \((.*)\)$/.exec(r.Review_Reasons);
   if (m) return m[1].split(", ").map((c) => ISSUE_LABEL[c] ?? c.toLowerCase().replace(/_/g, " ")).join("; ");
   if (r.Review_Reasons.startsWith("zero demand")) return "no sales in 12 weeks (delisted or supply problem?)";

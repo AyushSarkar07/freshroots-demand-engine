@@ -17,11 +17,25 @@ export interface PlannerBrief {
   fallback_reason?: string | null;
 }
 
+/** What a simulation changed, recorded with the scenario run so it can be explained and replayed. */
+export interface ScenarioSpec {
+  sku_id: string;
+  remove_history: boolean;
+  new_distributor: { id: string; name: string; region: string } | null;
+  remap_to: string | null;
+  festival_uplift: "rule" | "off";
+  /** The operations as a DBA would write them, shown in the UI. */
+  operations: string[];
+}
+
 export interface RunRecord {
   id: string;
   created_at: string;
   created_by: string;
-  source: "case_export" | "upload";
+  /** Scenario runs are simulations: never the default view, never approvable, never exported. */
+  source: "case_export" | "upload" | "scenario";
+  base_run_id?: string | null;
+  scenario?: ScenarioSpec | null;
   label: string;
   evaluation_date: string;
   inputs: EngineInputs;
@@ -30,7 +44,7 @@ export interface RunRecord {
   brief: PlannerBrief | null;
 }
 
-export type RunSummary = Pick<RunRecord, "id" | "created_at" | "created_by" | "source" | "label" | "evaluation_date"> & {
+export type RunSummary = Pick<RunRecord, "id" | "created_at" | "created_by" | "source" | "label" | "evaluation_date" | "base_run_id"> & {
   kpis: EngineResult["summary"]["operational_kpis"];
   sales_cutoff_week: string;
   dq_errors: number;
@@ -54,7 +68,9 @@ export interface EventRecord {
   id?: number;
   run_id: string;
   sku_id: string | null;
-  kind: "run_created" | "brief_generated" | "brief_fallback" | "notification" | "decision" | "decision_cleared" | "po_exported";
+  kind:
+    | "run_created" | "brief_generated" | "brief_fallback" | "notification" | "decision" | "decision_cleared" | "po_exported"
+    | "early_warning" | "rule_conflict" | "drift";
   actor: string;
   detail: Record<string, unknown>;
   at: string;
