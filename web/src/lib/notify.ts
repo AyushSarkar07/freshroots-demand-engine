@@ -9,12 +9,20 @@ const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 export function runMessage(run: RunRecord, alerts: Alert[] = []): { html: string; text: string } {
   const k = run.result.summary.operational_kpis;
   const high = alerts.filter((a) => a.severity === "high");
+  // Red alerts: things a person must act on today. Data holds and high-severity shifts.
+  const holds = run.result.recommendations.filter((r) => r.Data_Quality_Status === "ERROR");
+  const red = [
+    ...holds.map((r) => `${r.SKU_Name.replace(/^Freshroots\s+/i, "")}: held by a data check (${r.Review_Reasons.replace(/^data-quality hold \((.*)\)$/, "$1")}); no quantity until the planner decides`),
+    ...high.map((a) => `${a.name}: ${a.detail}`),
+  ];
   const head = `Freshroots reorder run · evaluated ${run.evaluation_date} · sales to ${run.result.sales_cutoff_week}`;
   const counts = `${k.immediate_reorder_skus} to reorder (${k.total_recommended_order_units.toLocaleString("en-IN")} units) · ${k.pause_order_skus} to pause · ${k.skus_requiring_manual_review} for planner review`;
-  const warn = alerts.length ? `${alerts.length} early warning${alerts.length > 1 ? "s" : ""}${high.length ? ` (${high.length} high)` : ""}:\n${alerts.slice(0, 5).map((a) => `• ${a.name}: ${a.detail}`).join("\n")}` : "";
+  const medium = alerts.filter((a) => a.severity !== "high");
+  const redText = red.length ? `RED ALERT · ${red.length} item${red.length > 1 ? "s" : ""} to act on today:\n${red.slice(0, 6).map((t) => `• ${t}`).join("\n")}` : "";
+  const warn = medium.length ? `${medium.length} early warning${medium.length > 1 ? "s" : ""}:\n${medium.slice(0, 4).map((a) => `• ${a.name}: ${a.detail}`).join("\n")}` : "";
   const tail = "Nothing is ordered until someone approves it in the app.";
-  const text = [head, run.brief?.headline ?? "", counts, warn, tail].filter(Boolean).join("\n");
-  const html = [`<b>${esc(head)}</b>`, run.brief ? esc(run.brief.headline) : "", esc(counts), warn ? `<b>⚠ ${esc(warn)}</b>` : "", esc(tail)].filter(Boolean).join("\n");
+  const text = [redText, head, run.brief?.headline ?? "", counts, warn, tail].filter(Boolean).join("\n");
+  const html = [redText ? `🔴 <b>${esc(redText)}</b>` : "", `<b>${esc(head)}</b>`, run.brief ? esc(run.brief.headline) : "", esc(counts), warn ? `⚠ ${esc(warn)}` : "", esc(tail)].filter(Boolean).join("\n");
   return { html, text };
 }
 
