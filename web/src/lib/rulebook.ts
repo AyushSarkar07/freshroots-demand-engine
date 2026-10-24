@@ -4,6 +4,7 @@ import { getConfig } from "./config";
 import { CONFLICT_LABEL, type ConflictCode } from "./conflicts";
 import type { EngineConfig } from "./engine/config";
 import { ADOPTION, CONFLICT_POLICY, CONSTANTS, PEOPLE, PLAYBOOK, ruleDocs, VARIABLES } from "./governance";
+import { SHADOW } from "./shadow";
 
 export interface Section { id: string; title: string; body: string }
 
@@ -24,6 +25,7 @@ export function rulebookSections(c: EngineConfig): Section[] {
   }));
   return [
     ...rules, ...conflicts, ...playbook,
+    { id: "K1", title: "K1 · Kill criterion (shadow mode)", body: `For the first four weeks the planner records his own call for every SKU before seeing the engine's (Oversight → Record planner calls). The engine's answer is revealed only after his call is saved.\nIf the engine agrees with the planner on fewer than ${Math.round(SHADOW.killThreshold * 100)}% of the SKUs the rules cover (at least ${SHADOW.minSample} calls), the written rules aren't how he actually plans: stop and redesign before going live.\nReorder quantities count as the same within ±${Math.round(SHADOW.qtyTolerance * 100)}%. SKUs held for planner review aren't counted. Every disagreement needs a reason, and those reasons drive the monthly rule review.\nOwner: ${who("raghav")}; reviewed with ${who("deepa")}.` },
     { id: "V1", title: "V1 · Variables and constants", body: `Variables (expected to change; review them):\n${VARIABLES.map((v) => `- ${v}`).join("\n")}\nConstants (hold by design):\n${CONSTANTS.map((v) => `- ${v}`).join("\n")}` },
     { id: "A1", title: "A1 · Ownership and adoption", body: `Champion: ${who(ADOPTION.champion.person)}. ${ADOPTION.champion.why}\nSponsor: ${who(ADOPTION.sponsor.person)}. ${ADOPTION.sponsor.why}\nAccountability:\n${ADOPTION.accountability.map((a) => `- ${who(a.who)}: ${a.for}`).join("\n")}\nIncentives:\n${ADOPTION.incentives.map((a) => `- ${a}`).join("\n")}\nPeople:\n${ADOPTION.people.map((a) => `- ${a}`).join("\n")}` },
   ];

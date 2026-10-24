@@ -70,7 +70,7 @@ export interface EventRecord {
   sku_id: string | null;
   kind:
     | "run_created" | "brief_generated" | "brief_fallback" | "notification" | "decision" | "decision_cleared" | "po_exported"
-    | "early_warning" | "rule_conflict" | "drift";
+    | "early_warning" | "rule_conflict" | "drift" | "shadow_call";
   actor: string;
   detail: Record<string, unknown>;
   at: string;

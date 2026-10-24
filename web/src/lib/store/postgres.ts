@@ -1,5 +1,6 @@
 import "server-only";
 import postgres from "postgres";
+import type { ShadowCall } from "../shadow";
 import type { DecisionRecord, EventRecord, PlannerBrief, RunRecord } from "../types";
 import { summarise, type Store } from "./types";
 
@@ -45,6 +46,18 @@ create index if not exists events_run_idx on events (run_id, at desc);
 create index if not exists events_kind_idx on events (kind, at desc);
 alter table runs add column if not exists base_run_id text;
 alter table runs add column if not exists scenario jsonb;
+create table if not exists shadow_calls (
+  run_id text not null references runs(id) on delete cascade,
+  sku_id text not null,
+  planner_action text not null check (planner_action in ('REORDER','PAUSE','MAINTAIN','HOLD')),
+  planner_qty integer not null check (planner_qty >= 0),
+  engine_action text not null,
+  engine_qty integer not null,
+  actor text not null,
+  note text not null default '',
+  decided_at timestamptz not null default now(),
+  primary key (run_id, sku_id)
+);
 `;
 
 async function db() {
@@ -144,5 +157,21 @@ export class PostgresStore implements Store {
     if (!runIds.length) return [];
     const s = await db();
     return (await s`select * from decisions where run_id = any(${runIds})`).map(toDecision);
+  }
+  async upsertShadowCall(c: ShadowCall) {
+    const s = await db();
+    await s`insert into shadow_calls (run_id, sku_id, planner_action, planner_qty, engine_action, engine_qty, actor, note, decided_at)
+      values (${c.run_id}, ${c.sku_id}, ${c.planner_action}, ${c.planner_qty}, ${c.engine_action}, ${c.engine_qty}, ${c.actor}, ${c.note}, ${c.decided_at})
+      on conflict (run_id, sku_id) do update set planner_action = excluded.planner_action, planner_qty = excluded.planner_qty,
+        actor = excluded.actor, note = excluded.note, decided_at = excluded.decided_at`;
+  }
+  async listShadowCalls(runIds?: string[]) {
+    const s = await db();
+    const rows = runIds ? (runIds.length ? await s`select * from shadow_calls where run_id = any(${runIds})` : []) : await s`select * from shadow_calls order by decided_at desc limit 2000`;
+    return rows.map((r) => ({
+      run_id: r.run_id as string, sku_id: r.sku_id as string, planner_action: r.planner_action as ShadowCall["planner_action"],
+      planner_qty: Number(r.planner_qty), engine_action: r.engine_action as string, engine_qty: Number(r.engine_qty),
+      actor: r.actor as string, note: r.note as string, decided_at: iso(r.decided_at),
+    }));
   }
 }

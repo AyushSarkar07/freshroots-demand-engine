@@ -1,3 +1,4 @@
+import type { ShadowCall } from "../shadow";
 import type { DecisionRecord, EventRecord, PlannerBrief, RunRecord, RunSummary } from "../types";
 
 export interface Store {
@@ -15,6 +16,9 @@ export interface Store {
   /** Events of the given kinds across all runs, newest first (the oversight logs). */
   listEventsByKind(kinds: EventRecord["kind"][], limit?: number): Promise<EventRecord[]>;
   listDecisionsForRuns(runIds: string[]): Promise<DecisionRecord[]>;
+  /** Shadow mode: the planner's own blind call per SKU per run. */
+  upsertShadowCall(c: ShadowCall): Promise<void>;
+  listShadowCalls(runIds?: string[]): Promise<ShadowCall[]>;
 }
 
 export function summarise(run: RunRecord): RunSummary {

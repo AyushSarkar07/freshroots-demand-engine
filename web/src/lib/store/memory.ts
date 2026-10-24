@@ -1,4 +1,5 @@
 import "server-only";
+import type { ShadowCall } from "../shadow";
 import type { DecisionRecord, EventRecord, RunRecord } from "../types";
 import { summarise, type Store } from "./types";
 
@@ -6,10 +7,15 @@ interface Data {
   runs: RunRecord[];
   decisions: DecisionRecord[];
   events: EventRecord[];
+  shadow: ShadowCall[];
 }
 // Kept on globalThis so dev-server reloads don't wipe it. Without DATABASE_URL, data lives only as long as the process.
 const g = globalThis as unknown as { __freshrootsMem?: Data };
-const data = () => (g.__freshrootsMem ??= { runs: [], decisions: [], events: [] });
+const data = () => {
+  const d = (g.__freshrootsMem ??= { runs: [], decisions: [], events: [], shadow: [] });
+  d.shadow ??= [];
+  return d;
+};
 
 export class MemoryStore implements Store {
   async listRuns() {
@@ -53,5 +59,14 @@ export class MemoryStore implements Store {
   }
   async listDecisionsForRuns(runIds: string[]) {
     return data().decisions.filter((d) => runIds.includes(d.run_id));
+  }
+  async upsertShadowCall(c: ShadowCall) {
+    const all = data().shadow;
+    const i = all.findIndex((x) => x.run_id === c.run_id && x.sku_id === c.sku_id);
+    if (i >= 0) all[i] = c;
+    else all.push(c);
+  }
+  async listShadowCalls(runIds?: string[]) {
+    return data().shadow.filter((c) => !runIds || runIds.includes(c.run_id));
   }
 }

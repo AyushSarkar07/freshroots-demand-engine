@@ -19,7 +19,7 @@ const LINKS = [
   { href: "/orders", label: "Purchase orders", Icon: IconOrders, match: (p: string) => p.startsWith("/orders") },
   { href: "/data", label: "Data & runs", Icon: IconData, match: (p: string) => p.startsWith("/data") || p.startsWith("/compare") },
   { href: "/rules", label: "Rules", Icon: IconRules, match: (p: string) => p.startsWith("/rules") },
-  { href: "/oversight", label: "Oversight", Icon: IconOversight, match: (p: string) => p.startsWith("/oversight") },
+  { href: "/oversight", label: "Oversight", Icon: IconOversight, match: (p: string) => p.startsWith("/oversight") || p.startsWith("/shadow") },
 ];
 
 const onPopState = (cb: () => void) => {

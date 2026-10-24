@@ -5,6 +5,8 @@ import { CONFLICT_LABEL, detectConflicts, type ConflictCode } from "@/lib/confli
 import { approvalStats } from "@/lib/decisions";
 import { fmtDate, fmtDateTime, pct } from "@/lib/format";
 import { ADOPTION, CONFLICT_POLICY, PEOPLE, PLAYBOOK } from "@/lib/governance";
+import { shortName } from "@/lib/insights";
+import { ACTION_LABEL, agreement, SHADOW } from "@/lib/shadow";
 import { ensureSeeded } from "@/lib/runs";
 import { getStore } from "@/lib/store";
 
@@ -18,11 +20,15 @@ export default async function Oversight() {
   const summaries = await store.listRuns();
   const real = summaries.filter((r) => r.source !== "scenario");
   const runs = (await Promise.all(real.slice(0, 26).map((r) => store.getRun(r.id)))).filter((r) => r != null);
-  const [decisions, warnings, drift] = await Promise.all([
+  const [decisions, warnings, drift, shadowCalls] = await Promise.all([
     store.listDecisionsForRuns(runs.map((r) => r.id)),
     store.listEventsByKind(["early_warning"], 200),
     store.listEventsByKind(["drift"], 200),
+    store.listShadowCalls(),
   ]);
+  const shadow = agreement(shadowCalls);
+  const skuName = new Map(runs.flatMap((r) => r.result.recommendations.map((x) => [`${r.id}|${x.SKU_ID}`, shortName(x.SKU_Name)] as const)));
+  const runDate = new Map(runs.map((r) => [r.id, r.evaluation_date]));
 
   // Outcomes per run (oldest first): stock position and how people used the recommendations.
   const outcomes = [...runs].reverse().map((r) => {
@@ -69,6 +75,62 @@ export default async function Oversight() {
           </div>
           <p className="mt-3 text-[12px] text-muted">{outcomes.length < 3 ? `Only ${outcomes.length} real run${outcomes.length === 1 ? "" : "s"} so far; a trend needs a few weeks of twice-weekly runs. ` : ""}An override rate above 30% is the kill-criterion signal from the decision memo: the written rules no longer match how planners decide.</p>
         </Panel>
+
+        <section id="shadow" className="scroll-mt-24">
+          <Panel eyebrow="Kill criterion · shadow mode" title="Does the engine agree with the planner?"
+            sub={`Raghav records his own call for each SKU before seeing the engine's. If they agree on fewer than ${Math.round(SHADOW.killThreshold * 100)}% of the SKUs the rules cover, stop and redesign the rules before going live (decision memo, pre-build decision 5).`}
+            right={<Link href="/shadow" className="rounded-[var(--radius)] bg-spice px-3 py-2 text-[13px] font-semibold text-night hover:bg-spice-hover">Record planner calls →</Link>}>
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+              <div>
+                <div className="flex items-end gap-3">
+                  <span className={`tnum font-display text-[56px] font-semibold leading-none tracking-tight ${shadow.verdict === "kill" ? "text-crit" : shadow.verdict === "on_track" ? "text-ok" : ""}`}>{pct(shadow.rate)}</span>
+                  <span className="pb-1.5 text-[13px] text-ink-2">agreement on {shadow.covered} rule-covered call{shadow.covered === 1 ? "" : "s"}</span>
+                </div>
+                <div className="relative mt-4 h-3 rounded-full bg-paper-3" aria-hidden>
+                  <div className={`h-full rounded-full ${shadow.verdict === "kill" ? "bg-under" : shadow.verdict === "on_track" ? "bg-ok" : "bg-ink-2"}`} style={{ width: `${(shadow.rate ?? 0) * 100}%` }} />
+                  <div className="absolute -top-1.5 h-6 w-0.5 bg-ink" style={{ left: `${SHADOW.killThreshold * 100}%` }} />
+                  <span className="tnum absolute top-5 -translate-x-1/2 text-[11.5px] font-semibold" style={{ left: `${SHADOW.killThreshold * 100}%` }}>{Math.round(SHADOW.killThreshold * 100)}% kill line</span>
+                </div>
+                <div className={`mt-8 rounded-[var(--radius-lg)] px-4 py-3 text-[13px] ${shadow.verdict === "kill" ? "bg-crit-soft text-crit" : shadow.verdict === "on_track" ? "bg-ok-soft text-ok" : "bg-warn-soft text-warn"}`}>
+                  <b className="font-semibold">{shadow.verdict === "kill" ? "Kill criterion triggered." : shadow.verdict === "on_track" ? "On track." : "Collecting evidence."}</b>{" "}
+                  {shadow.verdict === "kill" ? "The written rules don't match how the planner decides. Pause go-live, review the disagreements below and redesign the rules."
+                    : shadow.verdict === "on_track" ? `Agreement is at or above ${Math.round(SHADOW.killThreshold * 100)}% over ${shadow.covered} calls. Keep shadowing for the full four weeks before going live.`
+                    : `${shadow.covered} of ${SHADOW.minSample} rule-covered calls recorded. No verdict until there are enough to be meaningful.`}
+                </div>
+                <p className="tnum mt-3 text-[12.5px] text-ink-2">
+                  Quantity check: when both reorder, the quantities match within ±{Math.round(SHADOW.qtyTolerance * 100)}% on {shadow.qty.agree} of {shadow.qty.compared} ({pct(shadow.qty.rate)}).
+                  {shadow.reviewCalls.length ? ` ${shadow.reviewCalls.length} call${shadow.reviewCalls.length === 1 ? "" : "s"} on planner-review SKUs, not counted.` : ""}
+                </p>
+              </div>
+              <div>
+                <div className="mb-2 text-[12px] font-semibold text-ink-2">Where they agree and differ (rows: engine, columns: planner)</div>
+                <table className="tnum w-full text-center text-[13px]">
+                  <thead><tr className="text-[11px] uppercase tracking-[0.08em] text-muted"><th className="py-1.5 text-left font-semibold">Engine ↓ / Planner →</th>{shadow.order.map((o) => <th key={o} className="py-1.5 font-semibold">{ACTION_LABEL[o]}</th>)}</tr></thead>
+                  <tbody>
+                    {shadow.matrix.map((row, i) => (
+                      <tr key={row.engine} className="border-t border-line">
+                        <th className="py-2 text-left font-semibold">{ACTION_LABEL[row.engine]}{row.engine === "HOLD" ? <span className="font-normal text-muted"> (not counted)</span> : null}</th>
+                        {row.counts.map((n, j) => <td key={j} className={`py-2 ${i === j ? "bg-ok-soft font-semibold text-ok" : n ? "bg-warn-soft font-semibold text-warn" : "text-muted"}`}>{n}</td>)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <h3 className="mt-6 text-[13px] font-semibold">Every disagreement, with the planner&apos;s reason</h3>
+            {shadow.disagreements.length ? (
+              <ul className="mt-2 divide-y divide-line rounded-[var(--radius-lg)] border border-line">
+                {shadow.disagreements.map((c) => (
+                  <li key={`${c.run_id}|${c.sku_id}`} className="grid gap-x-4 px-4 py-2.5 text-[13px] md:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
+                    <div><b className="font-semibold">{skuName.get(`${c.run_id}|${c.sku_id}`) ?? c.sku_id}</b> <span className="text-muted">· run of {fmtDate(runDate.get(c.run_id) ?? c.decided_at)}</span>
+                      <div className="text-ink-2">Planner: {ACTION_LABEL[c.planner_action]}{c.planner_action === "REORDER" ? ` ${c.planner_qty}` : ""} · Engine: {ACTION_LABEL[c.engine_action === "IMMEDIATE_REORDER" ? "REORDER" : c.engine_action === "PAUSE_ORDER" ? "PAUSE" : c.engine_action === "MAINTAIN" ? "MAINTAIN" : "HOLD"]}{c.engine_action === "IMMEDIATE_REORDER" ? ` ${c.engine_qty}` : ""}</div></div>
+                    <div className={c.note ? "text-ink-2" : "text-warn"}>{c.note ? `“${c.note}”` : "No reason recorded yet"} <span className="text-muted">· {c.actor}</span></div>
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="mt-1 text-[13px] text-muted">{shadow.total ? "None: every call so far matches the engine." : "No planner calls recorded yet."}</p>}
+          </Panel>
+        </section>
 
         <div className="grid gap-6 lg:grid-cols-2">
           <Panel eyebrow="Trust drift" title="Early-warning log" sub="Unusual shifts between consecutive runs, sent to procurement with the run alert. Scenario-run warnings are labelled as simulations.">
